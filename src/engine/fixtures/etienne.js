@@ -26,10 +26,11 @@ export function etienneFixture() {
 
   // Espécie: Elfo (XPHB). No 2024 o elfo ESCOLHE 1 perícia entre
   // insight/perception/survival — Étienne escolheu Perception (prc).
+  // choice-bag genérico: a escolha de perícia da espécie (Perception).
   base.species = {
     id: 'elf',
     source: 'XPHB',
-    choices: { skillProficiencies: ['prc'] },
+    choices: { 'skill-0': { kind: 'skill', picks: ['prc'] } },
   };
 
   base.origin = {

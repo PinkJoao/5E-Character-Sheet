@@ -1,0 +1,48 @@
+.detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
+  margin-bottom: 4px;
+  object-fit: cover;
+}
+
+.credit {
+  font-size: 11px;
+  opacity: 0.5;
+  margin: 0 0 12px;
+}
+
+.name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.src {
+  margin: 2px 0 12px;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.lore {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.loreLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  opacity: 0.55;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}

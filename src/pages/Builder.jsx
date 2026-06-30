@@ -1,13 +1,25 @@
-// Placeholder do builder — a ficha completa chega na Fase 5.
-// Já carrega o personagem real, edita o nome, e (Fase 4) escolhe a espécie pelo
-// SelectorPanel, exercitando o ciclo de persistência.
+// =============================================================================
+// Builder — a ficha completa (Fase 5)
+// =============================================================================
+// Shell: foto + nome, header de stats DERIVADOS (tiles + atributos editáveis),
+// card de proficiências, e navegação por abas. As abas (Species / Background /
+// Class / Skills / Equipment / Spellbook) recebem conteúdo nos sub-passos da
+// Fase 5; aqui só Species já tem o seletor.
+// -----------------------------------------------------------------------------
+
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useCharacterStore from '../store/characterStore';
 import { useData } from '../data/dataContext';
+import useDerived from '../hooks/useDerived';
 import { totalLevel, classSummary } from '../schema/character';
-import SelectorPanel from '../selector/SelectorPanel';
-import raceEntity from '../selector/entities/race';
+import StatsHeader from '../components/builder/StatsHeader';
+import ProficienciesCard from '../components/builder/ProficienciesCard';
+import BackgroundTab from '../components/builder/BackgroundTab';
+import SpeciesTab from '../components/builder/SpeciesTab';
+import styles from './Builder.module.css';
+
+const TABS = ['Species', 'Background', 'Class', 'Skills', 'Equipment', 'Spellbook'];
 
 export default function Builder() {
   const { id } = useParams();
@@ -18,108 +30,126 @@ export default function Builder() {
   const character = useCharacterStore((s) => s.getById(id));
   const save = useCharacterStore((s) => s.save);
 
-  const [picking, setPicking] = useState(false);
+  const [activeTab, setActiveTab] = useState('Species');
 
   useEffect(() => {
     if (!loaded) load();
   }, [loaded, load]);
 
-  if (!loaded) return <Shell>Loading…</Shell>;
+  if (!loaded) return <div className={styles.page}>Loading…</div>;
   if (!character) {
     return (
-      <Shell>
+      <div className={styles.page}>
         <p>Character not found.</p>
         <Link to="/">← Back</Link>
-      </Shell>
+      </div>
     );
   }
 
-  const rename = (name) => save({ ...character, meta: { ...character.meta, name } });
-
-  const pickSpecies = (race) => {
-    save({
-      ...character,
-      species: { id: race.name.toLowerCase(), source: race.source, choices: {} },
-    });
-    setPicking(false);
-  };
-
-  const speciesLabel = character.species
-    ? `${character.species.id} (${character.species.source})`
-    : null;
-
   return (
-    <Shell>
-      <p>
-        <Link to="/">← Characters</Link>
-      </p>
-
-      <label style={lbl}>Name</label>
-      <input value={character.meta.name} onChange={(e) => rename(e.target.value)} style={input} />
-
-      <label style={{ ...lbl, marginTop: 24 }}>Species</label>
-      <button type="button" style={pickerBtn} onClick={() => setPicking(true)}>
-        {speciesLabel ? (
-          <span style={{ textTransform: 'capitalize' }}>{speciesLabel}</span>
-        ) : (
-          <span style={{ opacity: 0.6 }}>Choose species…</span>
-        )}
-      </button>
-
-      <p style={{ marginTop: 24, opacity: 0.7 }}>
-        Level {totalLevel(character)}
-        {classSummary(character) ? ` · ${classSummary(character)}` : ' · no class set'}
-      </p>
-
-      <p style={{ marginTop: 24, opacity: 0.5, fontSize: 14 }}>
-        Full Origin, Classes and Story tabs arrive in Phase 5.
-      </p>
-
-      {picking && (
-        <SelectorPanel
-          entity={raceEntity}
-          db={db}
-          currentId={
-            character.species ? `${capitalize(character.species.id)}|${character.species.source}` : null
-          }
-          onSelect={pickSpecies}
-          onClose={() => setPicking(false)}
-        />
-      )}
-    </Shell>
+    <BuilderInner
+      key={character.id}
+      character={character}
+      db={db}
+      save={save}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    />
   );
 }
 
-function capitalize(s) {
-  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+// Hooks isolados num componente com personagem garantido (evita hook-após-return).
+function BuilderInner({ character, db, save, activeTab, setActiveTab }) {
+  const derived = useDerived(character);
+
+  const rename = (name) => save({ ...character, meta: { ...character.meta, name } });
+
+  const setBaseScore = (ability, value) =>
+    save({ ...character, scores: { ...character.scores, [ability]: value } });
+
+  const setAlignment = (code) =>
+    save({ ...character, identity: { ...character.identity, alignment: code } });
+
+  const setOrigin = (origin) => save({ ...character, origin });
+
+  const pickSpecies = (race) =>
+    save({ ...character, species: { id: race.name.toLowerCase(), source: race.source, choices: {} } });
+  const clearSpecies = () => save({ ...character, species: null });
+  const setSpeciesChoices = (choices) =>
+    save({ ...character, species: { ...character.species, choices } });
+
+  return (
+    <div className={styles.page}>
+      <p className={styles.back}>
+        <Link to="/">← Characters</Link>
+      </p>
+
+      <div className={styles.identity}>
+        <button type="button" className={styles.portrait} title="Add a portrait (coming soon)">
+          {character.meta.portrait ? <img src={character.meta.portrait} alt="" /> : '👤'}
+        </button>
+        <div className={styles.nameWrap}>
+          <input
+            className={styles.name}
+            value={character.meta.name}
+            onChange={(e) => rename(e.target.value)}
+            placeholder="Character name"
+          />
+          <p className={styles.sub}>
+            {classSummary(character) || 'No class set'} · Level {totalLevel(character)}
+          </p>
+        </div>
+      </div>
+
+      <StatsHeader
+        derived={derived}
+        character={character}
+        onChangeBaseScore={setBaseScore}
+        onChangeAlignment={setAlignment}
+      />
+
+      <div className={styles.stack}>
+        <ProficienciesCard derived={derived} />
+      </div>
+
+      <nav className={styles.tabBar}>
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={activeTab === tab ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+          >
+            {tab}
+          </button>
+        ))}
+      </nav>
+
+      <div className={styles.panel}>
+        {activeTab === 'Species' && (
+          <SpeciesTab
+            character={character}
+            db={db}
+            onPick={pickSpecies}
+            onClear={clearSpecies}
+            onChangeChoices={setSpeciesChoices}
+          />
+        )}
+
+        {activeTab === 'Background' && (
+          <BackgroundTab character={character} db={db} onChangeOrigin={setOrigin} />
+        )}
+        {activeTab === 'Class' && (
+          <Placeholder text="Class, multiclass, subclass and level choices arrive in Phase 5c." />
+        )}
+        {activeTab === 'Skills' && <Placeholder text="Skill proficiency choices arrive in Phase 5b/5c." />}
+        {activeTab === 'Equipment' && <Placeholder text="Inventory & equipment arrive in a later phase." />}
+        {activeTab === 'Spellbook' && <Placeholder text="Spell selection arrives in a later phase." />}
+      </div>
+    </div>
+  );
 }
 
-const lbl = { display: 'block', fontSize: 13, opacity: 0.7, marginBottom: 6 };
-const input = {
-  font: 'inherit',
-  fontSize: 22,
-  padding: '8px 12px',
-  width: '100%',
-  maxWidth: 420,
-  borderRadius: 8,
-  border: '1px solid var(--border)',
-  background: 'var(--bg-soft)',
-  color: 'var(--text-h)',
-};
-const pickerBtn = {
-  font: 'inherit',
-  fontSize: 16,
-  padding: '12px 16px',
-  width: '100%',
-  maxWidth: 420,
-  textAlign: 'left',
-  borderRadius: 10,
-  border: '1px solid var(--border)',
-  background: 'var(--bg-soft)',
-  color: 'var(--text-h)',
-  cursor: 'pointer',
-};
-
-function Shell({ children }) {
-  return <div style={{ maxWidth: 760, margin: '0 auto', padding: '40px 24px' }}>{children}</div>;
+function Placeholder({ text }) {
+  return <div className={styles.placeholder}>{text}</div>;
 }

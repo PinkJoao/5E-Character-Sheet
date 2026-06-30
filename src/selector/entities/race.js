@@ -7,6 +7,8 @@
 // matching logic and any saved filter state never break.
 // -----------------------------------------------------------------------------
 
+import { latestOnly } from '../reprints';
+
 // --- Stable keys → display labels (the only place a translator touches) -------
 const SIZE_LABEL = { T: 'Tiny', S: 'Small', M: 'Medium', L: 'Large', V: 'Varies' };
 
@@ -63,7 +65,11 @@ const raceEntity = {
   type: 'race',
   title: 'Species',
 
-  list: (db) => db?.races?.race ?? [],
+  // Só versões atuais (latestOnly) e JOGÁVEIS — fora as "NPC Species" (raças
+  // monstruosas do DMG 2014, marcadas com traitTags "NPC Race"; o 5etools as
+  // esconde por padrão pelo filtro "NPC Species").
+  list: (db) =>
+    latestOnly(db?.races?.race ?? []).filter((r) => !r.traitTags?.includes('NPC Race')),
 
   idOf: (race) => `${race.name}|${race.source}`,
 
@@ -93,6 +99,17 @@ const raceEntity = {
     subtitle: race.source,
     badges: traitKeys(race).slice(0, 3).map((k) => TRAIT_LABEL[k]),
   }),
+
+  // Lore + imagens (fluff-races.json) p/ o DetailView. Tenta nome+fonte e, na
+  // falta, qualquer fonte com o mesmo nome.
+  fluff: (race, db) => {
+    const list = db?.['fluff-races']?.raceFluff ?? [];
+    return (
+      list.find((f) => f.name === race.name && f.source === race.source) ??
+      list.find((f) => f.name === race.name) ??
+      null
+    );
+  },
 };
 
 export default raceEntity;

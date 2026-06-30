@@ -1,0 +1,39 @@
+.wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.select {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 15px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.clearX {
+  flex: none;
+  width: 40px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.clearX:hover {
+  border-color: #d9534f;
+  color: #d9534f;
+}

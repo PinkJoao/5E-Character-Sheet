@@ -1,0 +1,322 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* --- Tiles: Level / Alignment / Hit Points --------------------------------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.tile {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tileHead {
+  width: 100%;
+  /* Altura fixa = altura padrão (colapsada) do card de atributo, para os 3
+     tiles ficarem idênticos mesmo quando o alinhamento quebra em 2 linhas. */
+  height: 88px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  position: relative;
+  cursor: pointer;
+}
+
+button.tileHead:hover {
+  background: var(--accent-bg);
+}
+
+.tile .value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-h);
+  line-height: 1.1;
+}
+
+.tile .value.small {
+  font-size: 14px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.tile .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  opacity: 0.6;
+}
+
+.tileChevron {
+  position: absolute;
+  top: 11px;
+  right: 12px;
+  font-size: 10px;
+  opacity: 0.45;
+  transition: transform 0.15s;
+}
+
+.tile.open .tileChevron {
+  transform: rotate(180deg);
+}
+
+.tileBody {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  padding: 4px 0;
+}
+
+.breakRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+.breakRow + .breakRow {
+  border-top: 1px solid var(--border);
+}
+
+.breakRow .bName {
+  color: var(--text-h);
+  text-transform: capitalize;
+}
+
+.breakRow .bVal {
+  font-weight: 700;
+  color: var(--text-h);
+  font-variant-numeric: tabular-nums;
+}
+
+.die {
+  font-size: 11px;
+  border: 1px solid var(--src-class);
+  color: var(--src-class);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-weight: 600;
+}
+
+.emptyNote {
+  padding: 10px 14px;
+  font-size: 12px;
+  opacity: 0.55;
+}
+
+/* --- Alignment picker (9 options) ------------------------------------------ */
+.alignGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 8px;
+}
+
+.alignBtn {
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 7px 0;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.alignBtn:hover {
+  border-color: var(--accent-border);
+  color: var(--text-h);
+}
+
+.alignSel {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+/* --- Abilities grid -------------------------------------------------------- */
+.abilities {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+@media (max-width: 620px) {
+  .abilities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .tile .value {
+    font-size: 22px;
+  }
+}
+
+.ability {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.abilityHead {
+  padding: 10px 6px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+  position: relative;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.abilityHead:hover {
+  background: var(--accent-bg);
+}
+
+.ability.open {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.ability .name {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  font-weight: 600;
+  opacity: 0.65;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.ability .total {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-h);
+  line-height: 1.05;
+}
+
+.ability .mod {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.chevron {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  font-size: 9px;
+  opacity: 0.45;
+  transition: transform 0.15s;
+}
+
+.ability.open .chevron {
+  transform: rotate(180deg);
+}
+
+/* --- Ability expanded: base stepper / bonus / modifier --------------------- */
+.detail {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.stepperBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  /* padding horizontal = padding das linhas Bonus/Modifier (10px), p/ o − e o +
+     alinharem com os textos de baixo em vez de colarem na borda do card. */
+  padding: 9px 10px;
+}
+
+.stepLabel {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.stepBtn {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.stepBtn:hover {
+  border-color: var(--accent-border);
+}
+
+.stepBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.stepValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-h);
+  font-variant-numeric: tabular-nums;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.detailRow .rowLabel {
+  opacity: 0.7;
+}
+
+.detailRow .rowValue {
+  font-weight: 700;
+  color: var(--text-h);
+  font-variant-numeric: tabular-nums;
+}

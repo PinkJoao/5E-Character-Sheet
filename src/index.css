@@ -11,6 +11,13 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  /* Cores por FONTE de uma escolha (codificação visual reutilizada na ficha):
+     classe=azul, subclasse=roxo, origem/geral=âmbar, espécie=verde-água. */
+  --src-class: #2563eb;
+  --src-subclass: #9333ea;
+  --src-origin: #d97706;
+  --src-species: #0d9488;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -45,6 +52,11 @@
     --accent-border: rgba(192, 132, 252, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
+    --src-class: #60a5fa;
+    --src-subclass: #c084fc;
+    --src-origin: #fbbf24;
+    --src-species: #2dd4bf;
   }
 }
 

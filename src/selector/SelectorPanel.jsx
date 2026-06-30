@@ -7,13 +7,18 @@
 
 import { useMemo, useState } from 'react';
 import { applyFilters, deriveOptions, cycleOption } from './filterModel';
+import DetailView from '../components/common/DetailView';
 import styles from './SelectorPanel.module.css';
 
-export default function SelectorPanel({ entity, db, currentId, onSelect, onClose }) {
+export default function SelectorPanel({ entity, db, currentId, onSelect, onClose, exclude }) {
   const [query, setQuery] = useState('');
   const [filterState, setFilterState] = useState({});
   const [hovered, setHovered] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [detailItem, setDetailItem] = useState(null); // mobile: card → detalhe
+
+  const isMobile = () =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches;
 
   // Pré-computa a lista uma vez (busca + valores de filtro).
   const items = useMemo(() => {
@@ -37,9 +42,14 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
     return out;
   }, [entity, items]);
 
-  const results = useMemo(
+  const filtered = useMemo(
     () => applyFilters(items, { query, filterState }),
     [items, query, filterState]
+  );
+  // Esconde o que já está na ficha (dedup), via predicado opcional.
+  const results = useMemo(
+    () => (exclude ? filtered.filter((it) => !exclude(it.raw)) : filtered),
+    [filtered, exclude]
   );
 
   const activeCount = Object.values(filterState).reduce(
@@ -140,7 +150,7 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
                     <button
                       type="button"
                       className={`${styles.card} ${selected ? styles.cardSel : ''}`}
-                      onClick={() => onSelect(item.raw)}
+                      onClick={() => (isMobile() ? setDetailItem(item.raw) : onSelect(item.raw))}
                       onMouseEnter={() => setHovered(item.raw)}
                     >
                       <span className={styles.cardTitle}>{card.title}</span>
@@ -165,30 +175,39 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
           <aside className={styles.preview}>
             {preview ? (
               <>
-                <h3>{preview.name}</h3>
-                <p className={styles.previewSrc}>{preview.source}</p>
-                {entity.card(preview).badges?.length > 0 && (
-                  <div className={styles.badges}>
-                    {entity.card(preview).badges.map((b) => (
-                      <em key={b} className={styles.badge}>
-                        {b}
-                      </em>
-                    ))}
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className={styles.selectBtn}
-                  onClick={() => onSelect(preview)}
-                >
-                  Select
-                </button>
+                <div className={styles.previewScroll}>
+                  <DetailView entity={entity} raw={preview} db={db} />
+                </div>
+                <div className={styles.previewFoot}>
+                  <button type="button" className={styles.selectBtn} onClick={() => onSelect(preview)}>
+                    Select
+                  </button>
+                </div>
               </>
             ) : (
               <p className={styles.muted}>Nothing to show.</p>
             )}
           </aside>
         </div>
+
+        {/* Tela de detalhe (mobile): tocar num card mostra info antes de selecionar. */}
+        {detailItem && (
+          <div className={styles.detailScreen}>
+            <div className={styles.detailHead}>
+              <button type="button" className={styles.detailBack} onClick={() => setDetailItem(null)}>
+                ← Back
+              </button>
+            </div>
+            <div className={styles.detailScroll}>
+              <DetailView entity={entity} raw={detailItem} db={db} />
+            </div>
+            <div className={styles.previewFoot}>
+              <button type="button" className={styles.selectBtn} onClick={() => onSelect(detailItem)}>
+                Select
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
