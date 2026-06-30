@@ -17,6 +17,7 @@ import StatsHeader from '../components/builder/StatsHeader';
 import ProficienciesCard from '../components/builder/ProficienciesCard';
 import BackgroundTab from '../components/builder/BackgroundTab';
 import SpeciesTab from '../components/builder/SpeciesTab';
+import ClassTab from '../components/builder/ClassTab';
 import styles from './Builder.module.css';
 
 const TABS = ['Species', 'Background', 'Class', 'Skills', 'Equipment', 'Spellbook'];
@@ -71,6 +72,8 @@ function BuilderInner({ character, db, save, activeTab, setActiveTab }) {
     save({ ...character, identity: { ...character.identity, alignment: code } });
 
   const setOrigin = (origin) => save({ ...character, origin });
+
+  const setClasses = (classes) => save({ ...character, classes });
 
   const pickSpecies = (race) =>
     save({ ...character, species: { id: race.name.toLowerCase(), source: race.source, choices: {} } });
@@ -139,9 +142,7 @@ function BuilderInner({ character, db, save, activeTab, setActiveTab }) {
         {activeTab === 'Background' && (
           <BackgroundTab character={character} db={db} onChangeOrigin={setOrigin} />
         )}
-        {activeTab === 'Class' && (
-          <Placeholder text="Class, multiclass, subclass and level choices arrive in Phase 5c." />
-        )}
+        {activeTab === 'Class' && <ClassTab character={character} db={db} onChange={setClasses} />}
         {activeTab === 'Skills' && <Placeholder text="Skill proficiency choices arrive in Phase 5b/5c." />}
         {activeTab === 'Equipment' && <Placeholder text="Inventory & equipment arrive in a later phase." />}
         {activeTab === 'Spellbook' && <Placeholder text="Spell selection arrives in a later phase." />}

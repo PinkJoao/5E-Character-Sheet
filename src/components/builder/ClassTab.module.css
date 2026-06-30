@@ -1,0 +1,138 @@
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.classCard {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--src-class);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.classTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.originBadge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--src-class);
+  border: 1px solid var(--src-class);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+.remove {
+  margin-left: auto;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.remove:hover {
+  border-color: #d9534f;
+  color: #d9534f;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rowLabel {
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+/* level stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.stepBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--accent);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.stepBtn:hover {
+  border-color: var(--accent-border);
+}
+
+.stepBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.stepValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-h);
+  min-width: 22px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.subLabel {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.addBtn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.addBtn:hover {
+  border-color: var(--accent-border);
+}
+
+.addBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.summary {
+  font-size: 13px;
+  opacity: 0.6;
+}
