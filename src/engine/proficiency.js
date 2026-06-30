@@ -60,8 +60,9 @@ export function collectSkillProficiencies(character) {
   };
 
   for (const s of character.origin?.skillProficiencies ?? []) mark(s, 1);
-  // Escolhas de espécie e do talento de origem, via choice-bag genérico (recursivo:
-  // pega também perícias de uma feature concedida dentro de outra escolha).
+  // Escolhas (choice-bag genérico, recursivo): origem (Background), espécie e
+  // talento de origem — inclusive perícias de uma feature dentro de outra escolha.
+  for (const s of collectChoicePicks(character.origin?.choices, 'skill')) mark(s, 1);
   for (const s of collectChoicePicks(character.species?.choices, 'skill')) mark(s, 1);
   for (const s of collectChoicePicks(character.origin?.originFeat?.choices, 'skill')) mark(s, 1);
 
@@ -89,6 +90,7 @@ export function collectSkillProficiencies(character) {
 export function collectToolProficiencies(character) {
   const out = new Set();
   for (const t of character.origin?.toolProficiencies ?? []) out.add(t);
+  for (const t of collectChoicePicks(character.origin?.choices, 'tool')) out.add(t);
   for (const t of collectChoicePicks(character.species?.choices, 'tool')) out.add(t);
   for (const t of collectChoicePicks(character.origin?.originFeat?.choices, 'tool')) out.add(t);
   return [...out];
@@ -110,6 +112,7 @@ export function collectLanguages(character, grantedLanguages = []) {
   };
   for (const l of grantedLanguages) add(l);
   for (const l of character.origin?.languages ?? []) add(l);
+  for (const l of collectChoicePicks(character.origin?.choices, 'language')) add(l);
   for (const l of collectChoicePicks(character.species?.choices, 'language')) add(l);
   for (const l of collectChoicePicks(character.origin?.originFeat?.choices, 'language')) add(l);
   return [...out];

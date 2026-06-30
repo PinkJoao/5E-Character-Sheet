@@ -21,6 +21,17 @@ describe('collectToolProficiencies / collectLanguages — agrega origem + escolh
     expect(collectToolProficiencies(c).sort()).toEqual(['game:dice', "smith's tools"]);
   });
 
+  it('origin.choices (Background padronizado) entra em skills E tools', () => {
+    const c = createCharacter();
+    c.origin.choices = {
+      skill: { kind: 'skill', picks: ['ath', 'prc'] },
+      tool: { kind: 'tool', picks: ["Alchemist's Supplies"] },
+      language: { kind: 'language', picks: ['Draconic'] },
+    };
+    expect(collectToolProficiencies(c)).toEqual(["Alchemist's Supplies"]);
+    expect(collectLanguages(c).sort()).toEqual(['Common', 'Draconic']);
+  });
+
   it('pool MISTO (Skilled): só a parte tool entra em tools', () => {
     const c = createCharacter();
     c.origin.originFeat = {

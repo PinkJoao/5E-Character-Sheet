@@ -126,15 +126,22 @@ button.tileHead:hover {
 .alignGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  justify-items: center;
+  gap: 5px;
   padding: 8px;
 }
 
 .alignBtn {
+  /* Quadrados: largura da célula (capada) e altura = largura (aspect-ratio). */
+  width: 100%;
+  max-width: 52px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
   font: inherit;
   font-size: 11px;
   font-weight: 600;
-  padding: 7px 0;
+  padding: 0;
   border: 1px solid var(--border);
   border-radius: 7px;
   background: var(--bg-soft);
@@ -253,9 +260,9 @@ button.tileHead:hover {
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  /* padding horizontal = padding das linhas Bonus/Modifier (10px), p/ o − e o +
-     alinharem com os textos de baixo em vez de colarem na borda do card. */
-  padding: 9px 10px;
+  /* padding horizontal = METADE do padding das linhas (10px) → meio termo entre
+     colar na borda e alinhar com os textos de baixo. */
+  padding: 9px 5px;
 }
 
 .stepLabel {

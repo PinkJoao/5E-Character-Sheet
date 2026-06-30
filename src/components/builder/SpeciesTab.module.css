@@ -41,18 +41,6 @@
   font-weight: 600;
 }
 
-.aboutToggle {
-  align-self: flex-start;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  background: transparent;
-  border: none;
-  padding: 4px 0;
-  cursor: pointer;
-}
-
 .about {
   border: 1px solid var(--border);
   border-radius: 12px;

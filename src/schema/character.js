@@ -109,9 +109,13 @@ export const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 /**
  * Origem custom — substitui o "background" pronto. Tudo escolhido individualmente.
+ * As proficiências (2 perícias, 1 ferramenta) e o idioma livre ficam em `choices`
+ * (choice-bag genérico, lido pelo engine como qualquer outra escolha). Os arrays
+ * skill/tool/languages permanecem para conteúdo legado/import.
  * @typedef {Object} CustomOrigin
  * @property {AbilityBoost[]} abilityBoosts
  * @property {FeatChoice|null} originFeat
+ * @property {Object} choices       choice-bag (skill×2, tool×1, language×1).
  * @property {string[]} skillProficiencies
  * @property {string[]} toolProficiencies
  * @property {string[]} languages
@@ -251,6 +255,7 @@ export function createCharacter(opts = {}) {
     origin: {
       abilityBoosts: [],
       originFeat: null,
+      choices: {},
       skillProficiencies: [],
       toolProficiencies: [],
       languages: [],

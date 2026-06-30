@@ -6,7 +6,6 @@
 // talento de origem do Humano — que recursa nas escolhas DELE) via ChoiceList.
 // -----------------------------------------------------------------------------
 
-import { useState } from 'react';
 import { parseChoices } from '../../engine/choices';
 import { parseSpecies } from '../../engine/speciesData';
 import { resolveRaceObj, ownedFromDb } from '../../engine/resolve';
@@ -21,7 +20,6 @@ function capitalize(s) {
 }
 
 export default function SpeciesTab({ character, db, onPick, onClear, onChangeChoices }) {
-  const [showAbout, setShowAbout] = useState(false);
   const species = character.species;
   const raceObj = species ? resolveRaceObj(db, species.id, species.source) : null;
   const parsed = raceObj ? parseSpecies(raceObj) : null;
@@ -30,7 +28,6 @@ export default function SpeciesTab({ character, db, onPick, onClear, onChangeCho
   return (
     <div className={styles.tab}>
       <section className={styles.section}>
-        <span className={styles.label}>Species</span>
         <PickerField
           entity={raceEntity}
           db={db}
@@ -60,14 +57,9 @@ export default function SpeciesTab({ character, db, onPick, onClear, onChangeCho
               </span>
             )}
           </div>
-          <button type="button" className={styles.aboutToggle} onClick={() => setShowAbout((v) => !v)}>
-            {showAbout ? '▾ Hide details' : '▸ About this species'}
-          </button>
-          {showAbout && (
-            <div className={styles.about}>
-              <DetailView entity={raceEntity} raw={raceObj} db={db} />
-            </div>
-          )}
+          <div className={styles.about}>
+            <DetailView entity={raceEntity} raw={raceObj} db={db} />
+          </div>
         </section>
       )}
 
