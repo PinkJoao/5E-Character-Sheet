@@ -4,8 +4,9 @@
 // Orquestra o carregamento do compêndio 5etools com a estratégia cache-first:
 //
 //   1. CHECKING  → lê o IndexedDB.
-//   2a. Cache fresco (<30 dias)  → usa direto, ZERO rede.            → READY
-//   2b. Vazio ou expirado        → "Updating Compendiums...", baixa. → UPDATING
+//   2a. Cache fresco (<30d) e COMPLETO (todos os arquivos do manifest)
+//        → usa direto, ZERO rede.                                    → READY
+//   2b. Vazio, expirado ou incompleto → "Updating...", baixa.        → UPDATING
 //        - sucesso               → grava com timestamp novo.          → READY
 //        - falha + havia cache   → graceful fallback (usa expirado).  → READY
 //        - falha + sem cache     → erro fatal (única tela de erro).   → ERROR
@@ -14,7 +15,7 @@
 // -----------------------------------------------------------------------------
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { readCache, writeCache, clearCache, isFresh } from '../data/cache';
+import { readCache, writeCache, clearCache, isFresh, isComplete } from '../data/cache';
 import { fetchCompendium } from '../data/fetcher';
 
 /**
@@ -70,13 +71,14 @@ export default function useDataEngine() {
     setStatus('checking');
     try {
       const { db: cachedDb, savedAt } = await readCache();
-      if (cachedDb && isFresh(savedAt)) {
-        // Caminho feliz: cache válido, abre instantâneo.
+      if (cachedDb && isFresh(savedAt) && isComplete(cachedDb)) {
+        // Caminho feliz: cache válido e completo, abre instantâneo.
         setDb(cachedDb);
         setStale(false);
         setStatus('ready');
       } else {
-        // Vazio ou expirado: tenta atualizar, com fallback para o que houver.
+        // Vazio, expirado ou INCOMPLETO (o app passou a pedir arquivos novos —
+        // ex.: fluff-class-*): atualiza, com fallback para o que houver.
         await downloadAndCache(cachedDb);
       }
     } finally {

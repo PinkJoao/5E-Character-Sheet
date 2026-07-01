@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------
 
 import db from './db';
-import { CACHE_TTL } from './config';
+import { CACHE_TTL, buildManifest } from './config';
 
 const SAVED_AT_KEY = 'compendium:savedAt';
 
@@ -81,4 +81,15 @@ export async function getCompendiumFile(key) {
 export function isFresh(savedAt) {
   if (!savedAt) return false;
   return Date.now() - savedAt < CACHE_TTL;
+}
+
+/**
+ * Diz se o cache contém TODOS os arquivos do manifest atual. Quando uma versão
+ * nova do app passa a pedir arquivos extras (ex.: fluff-class-*), um cache
+ * antigo — mesmo "fresco" — está incompleto e precisa de refetch.
+ * @param {object|null} dbObj
+ */
+export function isComplete(dbObj) {
+  if (!dbObj) return false;
+  return buildManifest().every(({ key }) => dbObj[key] != null);
 }
