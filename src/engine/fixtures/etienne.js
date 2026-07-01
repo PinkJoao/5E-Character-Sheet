@@ -49,9 +49,8 @@ export function etienneFixture() {
   fighter.source = 'XPHB';
   fighter.level = 6;
   fighter.hitPoints = { 1: 'max', 2: 4, 3: 10, 4: 4, 5: 10, 6: 9 };
-  fighter.choices = {
-    1: [{ type: 'skill-proficiency', skills: ['acr', 'his'] }], // perícias de Fighter
-  };
+  // choice-bag: perícias de Fighter (nível 1).
+  fighter.choices = { skill: { kind: 'skill', picks: ['acr', 'his'] } };
   base.classes = [fighter];
 
   return base;

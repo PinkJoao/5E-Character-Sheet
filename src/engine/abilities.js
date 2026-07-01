@@ -28,19 +28,7 @@ export function collectAbilityBoosts(character) {
   const speciesBoosts = character.species?.choices?.abilityBoosts;
   if (Array.isArray(speciesBoosts)) boosts.push(...speciesBoosts);
 
-  // Classes: ASIs e talentos com ASI embutido, em qualquer nível
-  for (const cls of character.classes ?? []) {
-    for (const choices of Object.values(cls.choices ?? {})) {
-      for (const choice of choices) {
-        if (choice.type === 'asi' && Array.isArray(choice.boosts)) {
-          boosts.push(...choice.boosts);
-        } else if (choice.type === 'feat') {
-          const fb = choice.feat?.choices?.abilityBoosts;
-          if (Array.isArray(fb)) boosts.push(...fb);
-        }
-      }
-    }
-  }
+  // (ASIs de classe e talentos com ASI embutido entram no 5c-2b, via choice-bag.)
 
   return boosts;
 }

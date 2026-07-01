@@ -1,11 +1,26 @@
 // =============================================================================
 // Entity config: Skill
 // =============================================================================
-// Usada nos pools MISTOS (ex: Skilled "3 skills or tools") para adicionar perícia
-// via SelectorPanel. Lista enxuta (18), mas reusa o mesmo painel genérico.
+// Seletor de perícia (SelectorPanel) — mostra a descrição de cada perícia via
+// DetailView (raw.entries) e a habilidade associada no meta. Usado nas escolhas
+// de perícia (Background, mistas, etc.).
 // -----------------------------------------------------------------------------
 
 import { latestOnly } from '../reprints';
+
+const ABILITY_NAME = {
+  str: 'Strength',
+  dex: 'Dexterity',
+  con: 'Constitution',
+  int: 'Intelligence',
+  wis: 'Wisdom',
+  cha: 'Charisma',
+};
+
+function abilityOf(s) {
+  const a = Array.isArray(s.ability) ? s.ability[0] : s.ability;
+  return a ? (ABILITY_NAME[a] ?? a) : null;
+}
 
 const skillEntity = {
   type: 'skill',
@@ -17,12 +32,20 @@ const skillEntity = {
 
   precompute: (s) => ({
     searchText: `${s.name} ${s.source}`.toLowerCase(),
-    filterValues: { source: [s.source].filter(Boolean) },
+    filterValues: {
+      source: [s.source].filter(Boolean),
+      ability: [abilityOf(s)].filter(Boolean),
+    },
   }),
 
-  filters: [{ id: 'source', header: 'Source', derive: true }],
+  filters: [
+    { id: 'ability', header: 'Ability', derive: true },
+    { id: 'source', header: 'Source', derive: true },
+  ],
 
-  card: (s) => ({ title: s.name, subtitle: s.source, badges: [] }),
+  meta: (s) => (abilityOf(s) ? [{ label: 'Ability', value: abilityOf(s) }] : []),
+
+  card: (s) => ({ title: s.name, subtitle: s.source, meta: abilityOf(s) ?? undefined, badges: [] }),
 };
 
 export default skillEntity;

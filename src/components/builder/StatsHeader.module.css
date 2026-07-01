@@ -98,7 +98,16 @@ button.tileHead:hover {
 
 .breakRow .bName {
   color: var(--text-h);
-  text-transform: capitalize;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.breakRow .bSub {
+  font-size: 11px;
+  font-style: normal;
+  color: var(--src-class);
+  opacity: 0.85;
 }
 
 .breakRow .bVal {

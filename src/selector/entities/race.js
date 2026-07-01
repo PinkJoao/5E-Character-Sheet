@@ -3,8 +3,8 @@
 // =============================================================================
 // Models the relevant filters (à la 5etools filter-races.js). Filter VALUES are
 // stable, language-independent KEYS (e.g. 'fly', 'spellcasting'); the LABELS are
-// kept in separate maps. A future translator only swaps the label maps — the
-// matching logic and any saved filter state never break.
+// kept in separate maps. Also exposes `meta()` — size / speed / creature type,
+// highlighting non-standard values (fast speed, non-humanoid type, etc.).
 // -----------------------------------------------------------------------------
 
 import { latestOnly } from '../reprints';
@@ -23,20 +23,30 @@ const TRAIT_LABEL = {
   'tool-proficiency': 'Tool Proficiency',
   'damage-resistance': 'Damage Resistance',
   'natural-armor': 'Natural Armor',
+  'natural-weapon': 'Natural Weapon',
   'powerful-build': 'Powerful Build',
   'improved-resting': 'Improved Resting',
 };
 
 // --- Derivation: 5etools fields → stable keys ---------------------------------
+function speedObj(speed) {
+  if (speed == null) return { walk: 0 };
+  return typeof speed === 'number' ? { walk: speed } : speed;
+}
+
 function speedKeys(speed) {
-  if (speed == null) return [];
-  const s = typeof speed === 'number' ? { walk: speed } : speed;
+  const s = speedObj(speed);
   const keys = [];
   if (s.walk) keys.push('walk');
   if (s.fly) keys.push('fly');
   if (s.swim) keys.push('swim');
   if (s.climb) keys.push('climb');
   return keys;
+}
+
+function creatureTypes(race) {
+  const types = race.creatureTypes ?? ['humanoid'];
+  return types.map((t) => (typeof t === 'string' ? t : 'humanoid'));
 }
 
 function traitKeys(race) {
@@ -50,10 +60,30 @@ function traitKeys(race) {
   if (race.resist) keys.push('damage-resistance');
   if (Array.isArray(race.traitTags)) {
     if (race.traitTags.includes('Natural Armor')) keys.push('natural-armor');
+    if (race.traitTags.includes('Natural Weapon')) keys.push('natural-weapon');
     if (race.traitTags.includes('Powerful Build')) keys.push('powerful-build');
     if (race.traitTags.includes('Improved Resting')) keys.push('improved-resting');
   }
   return keys;
+}
+
+// --- Display helpers ----------------------------------------------------------
+function cap(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
+function sizeText(size) {
+  const arr = (Array.isArray(size) ? size : [size]).filter(Boolean);
+  return arr.map((s) => SIZE_LABEL[s] ?? s).join(' or ') || '—';
+}
+
+function speedText(speed) {
+  const s = speedObj(speed);
+  const parts = [`${s.walk ?? 0} ft`];
+  for (const mode of ['fly', 'swim', 'climb']) {
+    if (s[mode]) parts.push(s[mode] === true ? mode : `${mode} ${s[mode]} ft`);
+  }
+  return parts.join(', ');
 }
 
 /** Builds the {value,label} option list for a fixed-key filter. */
@@ -65,15 +95,12 @@ const raceEntity = {
   type: 'race',
   title: 'Species',
 
-  // Só versões atuais (latestOnly) e JOGÁVEIS — fora as "NPC Species" (raças
-  // monstruosas do DMG 2014, marcadas com traitTags "NPC Race"; o 5etools as
-  // esconde por padrão pelo filtro "NPC Species").
+  // Só versões atuais (latestOnly) e JOGÁVEIS — fora as "NPC Species".
   list: (db) =>
     latestOnly(db?.races?.race ?? []).filter((r) => !r.traitTags?.includes('NPC Race')),
 
   idOf: (race) => `${race.name}|${race.source}`,
 
-  /** Precompute search text + filter values (stable keys), once per item. */
   precompute: (race) => {
     const sizes = (Array.isArray(race.size) ? race.size : [race.size]).filter(Boolean);
     return {
@@ -82,6 +109,7 @@ const raceEntity = {
         source: [race.source].filter(Boolean),
         size: sizes, // keys: T/S/M/L/V
         speed: speedKeys(race.speed),
+        type: creatureTypes(race).map(cap), // Humanoid / Fey / …
         trait: traitKeys(race),
       },
     };
@@ -91,17 +119,30 @@ const raceEntity = {
     { id: 'source', header: 'Source', derive: true },
     { id: 'size', header: 'Size', options: options(SIZE_LABEL) },
     { id: 'speed', header: 'Speed', options: options(SPEED_LABEL) },
+    { id: 'type', header: 'Creature Type', derive: true },
     { id: 'trait', header: 'Traits', options: options(TRAIT_LABEL) },
   ],
+
+  /** Size / Speed / Creature Type, com destaque para valores não-padrão. */
+  meta: (race) => {
+    const s = speedObj(race.speed);
+    const types = creatureTypes(race);
+    const extraMove = s.fly || s.swim || s.climb;
+    return [
+      { label: 'Size', value: sizeText(race.size) },
+      { label: 'Speed', value: speedText(race.speed), highlight: (s.walk ?? 0) !== 30 || !!extraMove },
+      { label: 'Type', value: types.map(cap).join(', '), highlight: !(types.length === 1 && types[0] === 'humanoid') },
+    ];
+  },
 
   card: (race) => ({
     title: race.name,
     subtitle: race.source,
+    meta: `${sizeText(race.size)} · ${speedText(race.speed)} · ${creatureTypes(race).map(cap).join(', ')}`,
     badges: traitKeys(race).slice(0, 3).map((k) => TRAIT_LABEL[k]),
   }),
 
-  // Lore + imagens (fluff-races.json) p/ o DetailView. Tenta nome+fonte e, na
-  // falta, qualquer fonte com o mesmo nome.
+  // Lore + imagens (fluff-races.json) p/ o DetailView.
   fluff: (race, db) => {
     const list = db?.['fluff-races']?.raceFluff ?? [];
     return (

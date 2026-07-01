@@ -31,6 +31,32 @@
   opacity: 0.6;
 }
 
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.metaItem {
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: var(--text);
+}
+
+.metaItem b {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.metaHi {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
 .lore {
   margin-top: 12px;
   padding-top: 12px;

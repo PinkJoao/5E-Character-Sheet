@@ -18,6 +18,7 @@ export default function DetailView({ entity, raw, db }) {
   const fluff = entity?.fluff?.(raw, db) ?? null;
   const image = fluff?.images?.find((i) => i.href);
   const src = image ? imgUrl(image.href) : null;
+  const meta = entity?.meta?.(raw) ?? [];
 
   return (
     <div className={styles.detail}>
@@ -30,6 +31,16 @@ export default function DetailView({ entity, raw, db }) {
 
       <h3 className={styles.name}>{raw.name}</h3>
       <p className={styles.src}>{raw.source}</p>
+
+      {meta.length > 0 && (
+        <div className={styles.meta}>
+          {meta.map((m) => (
+            <span key={m.label} className={m.highlight ? `${styles.metaItem} ${styles.metaHi}` : styles.metaItem}>
+              <b>{m.label}</b> {m.value}
+            </span>
+          ))}
+        </div>
+      )}
 
       {raw.entries?.length > 0 && <EntryContent entries={raw.entries} />}
 

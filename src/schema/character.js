@@ -148,7 +148,8 @@ export const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
  * @property {string|null} subclassId
  * @property {string|null} subclassSource
  * @property {Record<number, number|'max'>} hitPoints  Por nível: rolado ou "max".
- * @property {Record<number, LevelChoice[]>} choices   Escolhas por nível.
+ * @property {Object} choices   Choice-bag da classe (perícias, ASI/talento, etc.),
+ *   lido pelo engine como qualquer outra escolha (ver engine/choices).
  */
 
 /**
@@ -213,7 +214,7 @@ export function createClassEntry(isOriginalClass = true) {
     isOriginalClass,
     subclassId: null,
     subclassSource: null,
-    hitPoints: { 1: 'max' },
+    hitPoints: {}, // vazio = cálculo padrão (nv1 máx, demais média + CON)
     choices: {},
   };
 }

@@ -247,6 +247,12 @@
   font-family: var(--mono);
 }
 
+.cardMeta {
+  font-size: 11px;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
 .badges {
   display: flex;
   flex-wrap: wrap;

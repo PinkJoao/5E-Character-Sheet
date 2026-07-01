@@ -9,7 +9,7 @@
 import { ABILITIES, totalLevel } from '../schema/character';
 import { proficiencyBonus } from './math';
 import { finalScores, abilityModifiers } from './abilities';
-import { maxHp } from './hitpoints';
+import { hpBreakdown } from './hitpoints';
 import {
   collectSkillProficiencies,
   collectToolProficiencies,
@@ -53,22 +53,24 @@ export function deriveCharacter(character, ctx = {}) {
     saves[a] = saveBonus(character, a, profBonus, proficientSaves);
   }
 
-  // Breakdown por classe (para os cards Level / Hit Points expansíveis).
-  const classBreakdown = (character.classes ?? []).map((c) => ({
-    classId: c.classId,
-    level: c.level,
-    hitDie: ctx.hitDieMax?.[c.classId] ?? null,
-  }));
+  // Breakdown por classe (Level / Hit Points expansíveis) — inclui hp por classe.
+  const hasHitDie = ctx.hitDieMax && Object.keys(ctx.hitDieMax).length > 0;
+  const classBreakdown = hasHitDie
+    ? hpBreakdown(character, ctx.hitDieMax)
+    : (character.classes ?? []).map((c) => ({
+        classId: c.classId,
+        level: c.level,
+        hitDie: null,
+        subclassId: c.subclassId,
+        hp: 0,
+      }));
 
   return {
     level,
     proficiencyBonus: profBonus,
     scores,
     modifiers: mods,
-    maxHp:
-      ctx.hitDieMax && Object.keys(ctx.hitDieMax).length > 0
-        ? maxHp(character, ctx.hitDieMax)
-        : null,
+    maxHp: hasHitDie ? classBreakdown.reduce((s, c) => s + c.hp, 0) : null,
     skills,
     saves,
     proficientSaves,

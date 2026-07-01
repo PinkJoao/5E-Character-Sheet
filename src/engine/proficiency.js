@@ -65,17 +65,9 @@ export function collectSkillProficiencies(character) {
   for (const s of collectChoicePicks(character.origin?.choices, 'skill')) mark(s, 1);
   for (const s of collectChoicePicks(character.species?.choices, 'skill')) mark(s, 1);
   for (const s of collectChoicePicks(character.origin?.originFeat?.choices, 'skill')) mark(s, 1);
-
+  // Escolhas de classe (choice-bag por classe): perícias de nível 1 etc.
   for (const cls of character.classes ?? []) {
-    for (const choices of Object.values(cls.choices ?? {})) {
-      for (const choice of choices) {
-        if (choice.type === 'skill-proficiency') {
-          for (const s of choice.skills ?? []) mark(s, 1);
-        } else if (choice.type === 'skill-expertise') {
-          for (const s of choice.skills ?? []) mark(s, 2);
-        }
-      }
-    }
+    for (const s of collectChoicePicks(cls.choices, 'skill')) mark(s, 1);
   }
 
   return out;
@@ -93,6 +85,9 @@ export function collectToolProficiencies(character) {
   for (const t of collectChoicePicks(character.origin?.choices, 'tool')) out.add(t);
   for (const t of collectChoicePicks(character.species?.choices, 'tool')) out.add(t);
   for (const t of collectChoicePicks(character.origin?.originFeat?.choices, 'tool')) out.add(t);
+  for (const cls of character.classes ?? []) {
+    for (const t of collectChoicePicks(cls.choices, 'tool')) out.add(t);
+  }
   return [...out];
 }
 
@@ -115,6 +110,9 @@ export function collectLanguages(character, grantedLanguages = []) {
   for (const l of collectChoicePicks(character.origin?.choices, 'language')) add(l);
   for (const l of collectChoicePicks(character.species?.choices, 'language')) add(l);
   for (const l of collectChoicePicks(character.origin?.originFeat?.choices, 'language')) add(l);
+  for (const cls of character.classes ?? []) {
+    for (const l of collectChoicePicks(cls.choices, 'language')) add(l);
+  }
   return [...out];
 }
 
@@ -126,12 +124,7 @@ export function collectFeatIds(character) {
   out.push(...collectChoicePicks(character.species?.choices, 'feat'));
   out.push(...collectChoicePicks(character.origin?.originFeat?.choices, 'feat'));
   for (const cls of character.classes ?? []) {
-    for (const choices of Object.values(cls.choices ?? {})) {
-      for (const ch of choices) {
-        if (ch.type === 'feat' && ch.feat?.id) out.push(`${ch.feat.id}|${ch.feat.source}`);
-        out.push(...collectChoicePicks(ch.feat?.choices, 'feat'));
-      }
-    }
+    out.push(...collectChoicePicks(cls.choices, 'feat'));
   }
   return out;
 }

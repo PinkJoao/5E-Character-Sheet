@@ -155,6 +155,7 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
                     >
                       <span className={styles.cardTitle}>{card.title}</span>
                       <span className={styles.cardSub}>{card.subtitle}</span>
+                      {card.meta && <span className={styles.cardMeta}>{card.meta}</span>}
                       {card.badges?.length > 0 && (
                         <span className={styles.badges}>
                           {card.badges.map((b) => (

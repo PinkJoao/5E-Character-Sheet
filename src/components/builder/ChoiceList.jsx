@@ -27,10 +27,6 @@ import languageEntity from '../../selector/entities/language';
 import { SKILL_LABEL } from './labels';
 import styles from './ChoiceList.module.css';
 
-const SKILL_OPTIONS = Object.keys(SKILL_LABEL)
-  .map((code) => ({ value: code, label: SKILL_LABEL[code] }))
-  .sort((a, b) => a.label.localeCompare(b.label));
-
 const ADD_ENTITY = { skill: skillEntity, tool: toolEntity, language: languageEntity };
 const OWNED_KEY = { skill: 'skills', tool: 'tools', language: 'languages' };
 
@@ -39,17 +35,9 @@ function normVal(kind, v) {
   return kind === 'skill' ? v : String(v).toLowerCase();
 }
 
-/** O valor já está na ficha (qualquer fonte)? Usado nos painéis de ADICIONAR. */
+/** O valor já está na ficha (qualquer fonte)? */
 function isOwned(owned, kind, value) {
   return owned?.[OWNED_KEY[kind]]?.has(normVal(kind, value)) ?? false;
-}
-
-/** Já está na ficha por OUTRA fonte (fora deste choice)? Usado nos chips toggle. */
-function takenElsewhere(owned, kind, value, ownNorm) {
-  const set = owned?.[OWNED_KEY[kind]];
-  if (!set) return false;
-  const nv = normVal(kind, value);
-  return set.has(nv) && !ownNorm.has(nv);
 }
 
 export default function ChoiceList({ choices, bag, onChange, db, owned }) {
@@ -86,77 +74,43 @@ function ChoiceRow({ choice, entry, onChange, db, owned }) {
         <FeatChoice choice={choice} entry={entry} picks={picks} onChange={onChange} db={db} owned={owned} />
       ) : choice.pool.type === 'any' && Array.isArray(choice.pool.of) ? (
         <MixedChoice choice={choice} picks={picks} onChange={onChange} db={db} owned={owned} />
-      ) : choice.pool.type === 'any' && choice.pool.of !== 'skill' ? (
-        <TagChoice choice={choice} picks={picks} onChange={onChange} db={db} owned={owned} />
       ) : (
-        <ChipChoice choice={choice} picks={picks} onChange={onChange} owned={owned} />
+        // "any" OU "list" (skill/tool/language) → SelectorPanel (mostra descrição);
+        // pool de LISTA fica restrito às suas opções.
+        <TagChoice choice={choice} picks={picks} onChange={onChange} db={db} owned={owned} />
       )}
     </div>
   );
 }
 
-/** Chips toggle: pool de lista, ou "any skill" (todas as perícias). */
-function ChipChoice({ choice, picks, onChange, owned }) {
-  const kind = choice.kind;
-  const options = choice.pool.type === 'list' ? choice.pool.options : SKILL_OPTIONS;
-  const ownNorm = new Set(picks.map((p) => normVal(kind, p)));
-
-  const toggle = (value) => {
-    const next = picks.includes(value)
-      ? picks.filter((p) => p !== value)
-      : picks.length < choice.count
-        ? [...picks, value]
-        : picks;
-    onChange({ kind, picks: next });
-  };
-
-  return (
-    <div className={styles.chips}>
-      {options.map((o) => {
-        const sel = picks.includes(o.value);
-        const taken = takenElsewhere(owned, kind, o.value, ownNorm);
-        const disabled = !sel && (taken || picks.length >= choice.count);
-        let cls = styles.chip;
-        if (sel) cls = `${styles.chip} ${styles.chipActive}`;
-        else if (disabled) cls = `${styles.chip} ${styles.chipDisabled}`;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            className={cls}
-            onClick={() => !disabled && toggle(o.value)}
-            disabled={disabled}
-            title={taken ? 'Already on your sheet' : undefined}
-            aria-pressed={sel}
-          >
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-/** "any tool/language": chips removíveis + botão que abre o SelectorPanel. */
+/** Escolha via SelectorPanel (com descrição): chips removíveis + "+ Add". Trata
+ * "any" (todo o pool) e "list" (restrito às opções). Skills guardam o CÓDIGO. */
 function TagChoice({ choice, picks, onChange, db, owned }) {
   const [open, setOpen] = useState(false);
-  const kind = choice.pool.of;
+  const kind = choice.kind;
   const entity = ADD_ENTITY[kind];
+  const allowed =
+    choice.pool.type === 'list'
+      ? new Set(choice.pool.options.map((o) => String(o.value).toLowerCase()))
+      : null;
+  const valueOf = (raw) => (kind === 'skill' ? skillCode(raw.name) : raw.name);
+  const labelOf = (v) => (kind === 'skill' ? (SKILL_LABEL[v] ?? v) : v);
 
   const add = (raw) => {
-    if (!picks.includes(raw.name) && picks.length < choice.count) {
-      onChange({ kind: choice.kind, picks: [...picks, raw.name] });
+    const value = valueOf(raw);
+    if (!picks.includes(value) && picks.length < choice.count) {
+      onChange({ kind, picks: [...picks, value] });
     }
     setOpen(false);
   };
-  const remove = (name) => onChange({ kind: choice.kind, picks: picks.filter((p) => p !== name) });
+  const remove = (value) => onChange({ kind, picks: picks.filter((p) => p !== value) });
 
   return (
     <div className={styles.tags}>
-      {picks.map((name) => (
-        <span key={name} className={styles.tagChip}>
-          {name}
-          <button type="button" className={styles.tagRemove} onClick={() => remove(name)} aria-label={`Remove ${name}`}>
+      {picks.map((value) => (
+        <span key={value} className={styles.tagChip}>
+          {labelOf(value)}
+          <button type="button" className={styles.tagRemove} onClick={() => remove(value)} aria-label={`Remove ${labelOf(value)}`}>
             ×
           </button>
         </span>
@@ -171,7 +125,11 @@ function TagChoice({ choice, picks, onChange, db, owned }) {
           entity={entity}
           db={db}
           currentId={null}
-          exclude={(raw) => isOwned(owned, kind, raw.name)}
+          exclude={(raw) => {
+            const v = valueOf(raw);
+            if (allowed && !allowed.has(String(v).toLowerCase())) return true;
+            return isOwned(owned, kind, v);
+          }}
           onSelect={add}
           onClose={() => setOpen(false)}
         />

@@ -71,6 +71,10 @@ function ExpandableTile({ label, value, children }) {
   );
 }
 
+function cap(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
 function LevelTile({ level, classBreakdown }) {
   const named = classBreakdown.filter((c) => c.classId);
   return (
@@ -80,8 +84,11 @@ function LevelTile({ level, classBreakdown }) {
       ) : (
         named.map((c, i) => (
           <div className={styles.breakRow} key={`${c.classId}-${i}`}>
-            <span className={styles.bName}>{c.classId}</span>
-            <span className={styles.bVal}>Lvl {c.level}</span>
+            <span className={styles.bName}>
+              {cap(c.classId)}
+              {c.subclassId && <em className={styles.bSub}>{c.subclassId}</em>}
+            </span>
+            <span className={styles.bVal}>{c.level}</span>
           </div>
         ))
       )}
@@ -98,10 +105,8 @@ function HpTile({ maxHp, classBreakdown }) {
       ) : (
         named.map((c, i) => (
           <div className={styles.breakRow} key={`${c.classId}-${i}`}>
-            <span className={styles.bName}>{c.classId}</span>
-            <span className={styles.die}>
-              {c.level}d{c.hitDie}
-            </span>
+            <span className={styles.bName}>{cap(c.classId)}</span>
+            <span className={styles.bVal}>{c.hp}</span>
           </div>
         ))
       )}

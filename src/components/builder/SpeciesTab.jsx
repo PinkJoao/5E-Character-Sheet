@@ -7,7 +7,6 @@
 // -----------------------------------------------------------------------------
 
 import { parseChoices } from '../../engine/choices';
-import { parseSpecies } from '../../engine/speciesData';
 import { resolveRaceObj, ownedFromDb } from '../../engine/resolve';
 import PickerField from '../common/PickerField';
 import DetailView from '../common/DetailView';
@@ -22,7 +21,6 @@ function capitalize(s) {
 export default function SpeciesTab({ character, db, onPick, onClear, onChangeChoices }) {
   const species = character.species;
   const raceObj = species ? resolveRaceObj(db, species.id, species.source) : null;
-  const parsed = raceObj ? parseSpecies(raceObj) : null;
   const choices = raceObj ? parseChoices(raceObj) : [];
 
   return (
@@ -42,27 +40,7 @@ export default function SpeciesTab({ character, db, onPick, onClear, onChangeCho
         />
       </section>
 
-      {parsed && (
-        <section className={styles.section}>
-          <div className={styles.meta}>
-            <span className={styles.metaItem}>
-              <b>Size</b> {parsed.size}
-            </span>
-            <span className={styles.metaItem}>
-              <b>Speed</b> {parsed.speed.walk ?? 0} ft
-            </span>
-            {parsed.darkvision && (
-              <span className={styles.metaItem}>
-                <b>Darkvision</b> {parsed.darkvision} ft
-              </span>
-            )}
-          </div>
-          <div className={styles.about}>
-            <DetailView entity={raceEntity} raw={raceObj} db={db} />
-          </div>
-        </section>
-      )}
-
+      {/* Seletores/escolhas SEMPRE acima da descrição (facilita o uso). */}
       {choices.length > 0 && (
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>Species Choices</h3>
@@ -73,6 +51,14 @@ export default function SpeciesTab({ character, db, onPick, onClear, onChangeCho
             db={db}
             owned={ownedFromDb(character, db)}
           />
+        </section>
+      )}
+
+      {raceObj && (
+        <section className={styles.section}>
+          <div className={styles.about}>
+            <DetailView entity={raceEntity} raw={raceObj} db={db} />
+          </div>
         </section>
       )}
 
