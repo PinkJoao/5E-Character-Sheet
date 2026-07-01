@@ -69,7 +69,8 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
 
   const clearFilters = () => setFilterState({});
 
-  const preview = hovered ?? results[0]?.raw ?? null;
+  const preview = hovered ?? detailItem ?? results[0]?.raw ?? null;
+  //const preview = hovered ?? results[0]?.raw ?? null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -144,14 +145,16 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
             <ul className={styles.cards}>
               {results.map((item) => {
                 const card = entity.card(item.raw);
-                const selected = item.id === currentId;
+                const selected = item.id === currentId; // Verifica se é o item já salvo na ficha
+                const isPinned = detailItem && entity.idOf(detailItem) === item.id; // Verifica se é o item atualmente clicado/fixado para preview
                 return (
                   <li key={item.id}>
                     <button
                       type="button"
-                      className={`${styles.card} ${selected ? styles.cardSel : ''}`}
-                      onClick={() => (isMobile() ? setDetailItem(item.raw) : onSelect(item.raw))}
+                      className={`${styles.card} ${selected ? styles.cardSel : ''} ${isPinned ? styles.cardPinned : ''}`}
+                      onClick={() => setDetailItem(item.raw)}
                       onMouseEnter={() => setHovered(item.raw)}
+                      onMouseLeave={() => setHovered(null)}
                     >
                       <span className={styles.cardTitle}>{card.title}</span>
                       <span className={styles.cardSub}>{card.subtitle}</span>
@@ -192,7 +195,7 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
         </div>
 
         {/* Tela de detalhe (mobile): tocar num card mostra info antes de selecionar. */}
-        {detailItem && (
+        {detailItem && isMobile() && (
           <div className={styles.detailScreen}>
             <div className={styles.detailHead}>
               <button type="button" className={styles.detailBack} onClick={() => setDetailItem(null)}>
