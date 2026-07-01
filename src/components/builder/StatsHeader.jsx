@@ -24,12 +24,26 @@ const ALIGNMENT_LABEL = {
 };
 const ALIGNMENT_ORDER = ['LG', 'NG', 'CG', 'LN', 'N', 'CN', 'LE', 'NE', 'CE'];
 
-export default function StatsHeader({ derived, character, onChangeBaseScore, onChangeAlignment }) {
+export default function StatsHeader({
+  derived,
+  character,
+  onChangeBaseScore,
+  onChangeAlignment,
+  onRollHp,
+  onAverageHp,
+  hpRolled,
+}) {
   return (
     <div className={styles.header}>
       <div className={styles.tiles}>
         <LevelTile level={derived.level} classBreakdown={derived.classBreakdown} />
-        <HpTile maxHp={derived.maxHp} classBreakdown={derived.classBreakdown} />
+        <HpTile
+          maxHp={derived.maxHp}
+          classBreakdown={derived.classBreakdown}
+          rolled={hpRolled}
+          onRoll={onRollHp}
+          onAverage={onAverageHp}
+        />
         <AlignmentTile current={character.identity.alignment} onSelect={onChangeAlignment} />
       </div>
 
@@ -96,19 +110,39 @@ function LevelTile({ level, classBreakdown }) {
   );
 }
 
-function HpTile({ maxHp, classBreakdown }) {
+function HpTile({ maxHp, classBreakdown, rolled, onRoll, onAverage }) {
   const named = classBreakdown.filter((c) => c.classId && c.hitDie);
   return (
     <ExpandableTile label="Hit Points" value={maxHp ?? '—'}>
       {named.length === 0 ? (
         <p className={styles.emptyNote}>Add a class to track hit points.</p>
       ) : (
-        named.map((c, i) => (
-          <div className={styles.breakRow} key={`${c.classId}-${i}`}>
-            <span className={styles.bName}>{cap(c.classId)}</span>
-            <span className={styles.bVal}>{c.hp}</span>
+        <>
+          {named.map((c, i) => (
+            <div className={styles.breakRow} key={`${c.classId}-${i}`}>
+              <span className={styles.bName}>{cap(c.classId)}</span>
+              <span className={styles.die}>
+                {c.level}d{c.hitDie}
+              </span>
+            </div>
+          ))}
+          <div className={styles.hpButtons}>
+            <button
+              type="button"
+              className={rolled ? styles.hpBtn : `${styles.hpBtn} ${styles.hpBtnActive}`}
+              onClick={onAverage}
+            >
+              Reset
+            </button>
+            <button
+              type="button"
+              className={rolled ? `${styles.hpBtn} ${styles.hpBtnActive}` : styles.hpBtn}
+              onClick={onRoll}
+            >
+              Roll
+            </button>
           </div>
-        ))
+        </>
       )}
     </ExpandableTile>
   );

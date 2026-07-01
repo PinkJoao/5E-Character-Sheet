@@ -8,6 +8,7 @@
 // -----------------------------------------------------------------------------
 
 import { latestOnly } from '../reprints';
+import { resolveCopies } from '../copy';
 
 // --- Stable keys → display labels (the only place a translator touches) -------
 const SIZE_LABEL = { T: 'Tiny', S: 'Small', M: 'Medium', L: 'Large', V: 'Varies' };
@@ -95,9 +96,12 @@ const raceEntity = {
   type: 'race',
   title: 'Species',
 
-  // Só versões atuais (latestOnly) e JOGÁVEIS — fora as "NPC Species".
+  // Resolve herança `_copy` (size/speed/traits vêm do pai) → só versões atuais
+  // (latestOnly) → e só JOGÁVEIS (fora as "NPC Species").
   list: (db) =>
-    latestOnly(db?.races?.race ?? []).filter((r) => !r.traitTags?.includes('NPC Race')),
+    latestOnly(resolveCopies(db?.races?.race ?? [])).filter(
+      (r) => !r.traitTags?.includes('NPC Race')
+    ),
 
   idOf: (race) => `${race.name}|${race.source}`,
 

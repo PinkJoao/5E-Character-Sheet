@@ -117,6 +117,27 @@ function renderEntry(entry, key) {
     }
     case 'table':
       return renderTable(entry, key);
+    case 'options':
+      return (
+        <div key={key} className={styles.section}>
+          {entry.name && <span className={styles.entryName}>{entry.name}. </span>}
+          {renderList(entry.entries, key)}
+        </div>
+      );
+    // Referências que não foram pré-resolvidas: mostra ao menos o nome (evita
+    // buracos no texto). refSubclassFeature normalmente já vem resolvido.
+    case 'refOptionalfeature':
+      return (
+        <p key={key} className={styles.ref}>
+          {refName(entry.optionalfeature)}
+        </p>
+      );
+    case 'refSubclassFeature':
+      return (
+        <p key={key} className={styles.ref}>
+          {refName(entry.subclassFeature)}
+        </p>
+      );
     default:
       return entry.entries ? <div key={key}>{renderList(entry.entries, key)}</div> : null;
   }
@@ -126,29 +147,36 @@ function renderList(entries, key) {
   return (entries ?? []).map((e, idx) => renderEntry(e, `${key}-${idx}`));
 }
 
+/** "Ambush|TCE" / "Manifest Echo|Fighter||…" → "Ambush" / "Manifest Echo". */
+function refName(ref) {
+  return String(ref ?? '').split('|')[0];
+}
+
 function renderTable(entry, key) {
   const rows = entry.rows ?? [];
   return (
-    <table key={key} className={styles.table}>
-      {entry.colLabels && (
-        <thead>
-          <tr>
-            {entry.colLabels.map((c, idx) => (
-              <th key={idx}>{renderInline(String(c), `${key}-h-${idx}`)}</th>
-            ))}
-          </tr>
-        </thead>
-      )}
-      <tbody>
-        {rows.map((row, ri) => (
-          <tr key={ri}>
-            {(Array.isArray(row) ? row : [row]).map((cell, ci) => (
-              <td key={ci}>{typeof cell === 'string' ? renderInline(cell, `${key}-${ri}-${ci}`) : renderList([cell], `${key}-${ri}-${ci}`)}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div key={key} className={styles.tableWrap}>
+      <table className={styles.table}>
+        {entry.colLabels && (
+          <thead>
+            <tr>
+              {entry.colLabels.map((c, idx) => (
+                <th key={idx}>{renderInline(String(c), `${key}-h-${idx}`)}</th>
+              ))}
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri}>
+              {(Array.isArray(row) ? row : [row]).map((cell, ci) => (
+                <td key={ci}>{typeof cell === 'string' ? renderInline(cell, `${key}-${ri}-${ci}`) : renderList([cell], `${key}-${ri}-${ci}`)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

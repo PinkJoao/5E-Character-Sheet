@@ -45,6 +45,26 @@ const classEntity = {
     subtitle: c.source,
     badges: [`d${c.hd?.faces ?? '?'}`, ...(isCaster(c) ? ['Spellcaster'] : [])],
   }),
+
+  // Texto "Info" da classe (fluff-class-*.json) → conteúdo principal do preview.
+  entries: (c, db) => classFluff(c, db)?.entries ?? [],
+
+  // Só a arte (as entries vêm de `entries()`, p/ não duplicar).
+  fluff: (c, db) => {
+    const images = classFluff(c, db)?.images;
+    return images?.length ? { images } : null;
+  },
 };
+
+/** Casa a classe com sua entrada de fluff (preferindo a mesma fonte). */
+function classFluff(c, db) {
+  const list = db?.[`fluff-class-${c.name.toLowerCase()}`]?.classFluff ?? [];
+  return (
+    list.find((f) => f.name === c.name && f.source === c.source) ??
+    list.find((f) => f.name === c.name) ??
+    list[0] ??
+    null
+  );
+}
 
 export default classEntity;

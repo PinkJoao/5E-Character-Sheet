@@ -67,5 +67,11 @@ export function buildManifest() {
     path: `class/class-${name}.json`,
   }));
 
-  return [...globals, ...classes];
+  // Fluff das classes (texto "Info" + arte ilustrativa da classe e subclasses).
+  const classFluff = CLASS_NAMES.map((name) => ({
+    key: `fluff-class-${name}`, // ex: "fluff-class-fighter"
+    path: `class/fluff-class-${name}.json`,
+  }));
+
+  return [...globals, ...classes, ...classFluff];
 }

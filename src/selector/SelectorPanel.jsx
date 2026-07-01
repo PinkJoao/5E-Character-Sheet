@@ -109,11 +109,20 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
               <span className={styles.legend}>
                 <em className={styles.dotInc} /> include · <em className={styles.dotExc} /> exclude
               </span>
-              {activeCount > 0 && (
-                <button type="button" className={styles.clear} onClick={clearFilters}>
-                  Clear
+              <span className={styles.filtersActions}>
+                {activeCount > 0 && (
+                  <button type="button" className={styles.clear} onClick={clearFilters}>
+                    Clear
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={styles.applyFilters}
+                  onClick={() => setShowFilters(false)}
+                >
+                  Apply
                 </button>
-              )}
+              </span>
             </div>
             {entity.filters.map((f) => (
               <div key={f.id} className={styles.filterGroup}>

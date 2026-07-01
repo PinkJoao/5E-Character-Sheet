@@ -7,6 +7,7 @@
 // -----------------------------------------------------------------------------
 
 import { latestOnly } from '../reprints';
+import { resolveSubclassEntries } from '../../engine/subclassPreview';
 
 // Subclasses não usam reprintedAs de forma consistente (e há duplicatas na mesma
 // fonte). Dedup por shortName, preferindo a versão 2024 (XPHB).
@@ -40,5 +41,18 @@ export function makeSubclassEntity(classId, title = 'Subclass') {
     filters: [{ id: 'source', header: 'Source', derive: true }],
 
     card: (s) => ({ title: s.name, subtitle: s.source, badges: [] }),
+
+    // Todas as features da subclasse (resolvidas), p/ o jogador ver antes de escolher.
+    entries: (s, db) => resolveSubclassEntries(db, classId, s),
+
+    // Arte da subclasse (fluff-class-*.json → subclassFluff), casada por shortName.
+    fluff: (s, db) => {
+      const list = db?.[`fluff-class-${classId}`]?.subclassFluff ?? [];
+      const match =
+        list.find((f) => f.shortName === s.shortName && f.source === s.source) ??
+        list.find((f) => f.shortName === s.shortName) ??
+        null;
+      return match?.images?.length ? { images: match.images } : null;
+    },
   };
 }

@@ -19,6 +19,8 @@ export default function DetailView({ entity, raw, db }) {
   const image = fluff?.images?.find((i) => i.href);
   const src = image ? imgUrl(image.href) : null;
   const meta = entity?.meta?.(raw) ?? [];
+  // Entidades como classe/subclasse montam os entries (fluff/features resolvidas).
+  const bodyEntries = entity?.entries?.(raw, db) ?? raw.entries;
 
   return (
     <div className={styles.detail}>
@@ -42,7 +44,7 @@ export default function DetailView({ entity, raw, db }) {
         </div>
       )}
 
-      {raw.entries?.length > 0 && <EntryContent entries={raw.entries} />}
+      {bodyEntries?.length > 0 && <EntryContent entries={bodyEntries} />}
 
       {fluff?.entries?.length > 0 && (
         <div className={styles.lore}>

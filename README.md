@@ -6,6 +6,7 @@ A character builder for **D&D 5e (2024 rules)**. Mobile-first, runs in the brows
 
 - Manage multiple characters (create, duplicate, import/export).
 - Build a character across **Species**, **Background**, **Class** and more — with stats (ability scores, HP, saves, proficiencies) updating live as you choose.
+- Rich pickers with search, filters and a detail preview (art, lore and full feature text) for every choice.
 - Custom origin (no prepackaged backgrounds) and full **multiclassing**.
 - Game content comes from the 5e.tools community and is cached for offline use.
 
@@ -15,7 +16,7 @@ A character builder for **D&D 5e (2024 rules)**. Mobile-first, runs in the brows
 - Character roster and local saving.
 - Species - traits, lore and racial choices.
 - Background - ability boosts, origin feat, proficiencies and language.
-- Class - class, multiclass, subclass, level and class skill proficiencies.
+- Class - class, multiclass, subclass, level and class skill proficiencies, with class/subclass info and art in the preview.
 
 **Planned**
 - Remaining per-level class choices (ability score increases / feats, fighting styles, expertise, etc.).

@@ -75,6 +75,26 @@ function BuilderInner({ character, db, save, activeTab, setActiveTab }) {
 
   const setClasses = (classes) => save({ ...character, classes });
 
+  // HP: rolar (máx no nível 1, resto rolado) ou média (padrão = hitPoints vazio).
+  const dieOf = (classId) => derived.classBreakdown.find((b) => b.classId === classId)?.hitDie ?? 0;
+  const rollHp = () =>
+    save({
+      ...character,
+      classes: character.classes.map((cls) => {
+        const die = dieOf(cls.classId);
+        const hitPoints = {};
+        for (let lvl = 2; lvl <= cls.level; lvl++) {
+          hitPoints[lvl] = die > 0 ? Math.floor(Math.random() * die) + 1 : 0;
+        }
+        return { ...cls, hitPoints };
+      }),
+    });
+  const averageHp = () =>
+    save({ ...character, classes: character.classes.map((cls) => ({ ...cls, hitPoints: {} })) });
+  const hpRolled = character.classes.some((cls) =>
+    Object.values(cls.hitPoints ?? {}).some((v) => typeof v === 'number'),
+  );
+
   const pickSpecies = (race) =>
     save({ ...character, species: { id: race.name.toLowerCase(), source: race.source, choices: {} } });
   const clearSpecies = () => save({ ...character, species: null });
@@ -109,6 +129,9 @@ function BuilderInner({ character, db, save, activeTab, setActiveTab }) {
         character={character}
         onChangeBaseScore={setBaseScore}
         onChangeAlignment={setAlignment}
+        onRollHp={rollHp}
+        onAverageHp={averageHp}
+        hpRolled={hpRolled}
       />
 
       <div className={styles.stack}>

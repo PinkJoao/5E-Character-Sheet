@@ -87,9 +87,9 @@ button.tileHead:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
-  font-size: 13px;
+  gap: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
 }
 
 .breakRow + .breakRow {
@@ -117,18 +117,49 @@ button.tileHead:hover {
 }
 
 .die {
-  font-size: 11px;
-  border: 1px solid var(--src-class);
+  font-size: 12px;
   color: var(--src-class);
-  border-radius: 5px;
-  padding: 1px 6px;
-  font-weight: 600;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .emptyNote {
   padding: 10px 14px;
   font-size: 12px;
   opacity: 0.55;
+}
+
+/* Botões Roll / Average do card de HP. */
+.hpButtons {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.hpBtn {
+  flex: 1;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 0;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.hpBtn:hover {
+  border-color: var(--accent-border);
+  color: var(--text-h);
+}
+
+.hpBtnActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-bg);
 }
 
 /* --- Alignment picker (9 options) ------------------------------------------ */
