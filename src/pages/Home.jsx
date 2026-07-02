@@ -95,9 +95,13 @@ export default function Home() {
                   className={styles.cardMain}
                   onClick={() => navigate(`/build/${c.id}`)}
                 >
-                  <span className={styles.avatar} aria-hidden="true">
-                    {(c.meta.name || '?').charAt(0).toUpperCase()}
-                  </span>
+                  {c.meta.portrait ? (
+                    <img className={styles.avatarImg} src={c.meta.portrait} alt="" aria-hidden="true" />
+                  ) : (
+                    <span className={styles.avatar} aria-hidden="true">
+                      {(c.meta.name || '?').charAt(0).toUpperCase()}
+                    </span>
+                  )}
                   <span className={styles.info}>
                     <span className={styles.name}>{c.meta.name || 'Unnamed'}</span>
                     <span className={styles.sub}>

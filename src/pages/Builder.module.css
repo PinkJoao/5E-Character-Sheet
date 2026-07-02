@@ -113,14 +113,22 @@
   position: absolute;
   top: 14px;
   right: 14px;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  color: #fff;
-  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 16px;
+  line-height: 1;
   cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.viewerClose:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
 }
 
 .nameWrap {

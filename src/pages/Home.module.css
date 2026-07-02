@@ -118,6 +118,19 @@
   background: var(--accent-bg);
 }
 
+/* Retrato no roster: qualquer proporção, SEM distorcer nem cortar — a imagem
+   se ajusta dentro dos tetos de largura/altura. */
+.avatarImg {
+  flex: none;
+  max-width: 64px;
+  max-height: 44px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
 .info {
   display: flex;
   flex-direction: column;
