@@ -14,7 +14,7 @@ A character builder for **D&D 5e (2024 rules)**. Mobile-first, runs in the brows
 
 **Done**
 1. Foundation - data layer (5e.tools content, offline cache), local storage, character roster.
-2. Sheet shell - live derived stats (abilities, HP, saves), proficiencies card, tab navigation.
+2. Sheet shell - live derived stats (abilities, HP, saves), proficiencies card, tab navigation, portrait upload.
 3. Species - traits, lore and racial choices.
 4. Background - ability boosts, origin feat, proficiencies and language.
 5. Class - class, multiclass, subclass, level and skill proficiencies, with info and art in the preview.

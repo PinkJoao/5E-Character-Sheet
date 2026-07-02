@@ -16,6 +16,12 @@
   margin-bottom: 20px;
 }
 
+.portraitWrap {
+  position: relative;
+  flex: none;
+  max-width: 100%;
+}
+
 .portrait {
   width: 88px;
   height: 88px;
@@ -36,10 +42,85 @@
   border-color: var(--accent-border);
 }
 
-.portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* Com imagem: o botão assume a PROPORÇÃO natural da foto (sem corte), limitado
+   por uma altura máxima p/ não dominar a tela. */
+.portraitFilled {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+.portraitFilled img {
+  display: block;
+  max-height: 180px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Visualizador do retrato em tela cheia (trocar / baixar / remover). */
+.viewerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+}
+
+.viewerImg {
+  max-width: 100%;
+  max-height: calc(100svh - 140px); /* deixa espaço p/ os botões */
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.viewerActions {
+  display: flex;
+  gap: 10px;
+}
+
+.viewerBtn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-h);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.viewerBtn:hover {
+  border-color: var(--accent-border);
+}
+
+.viewerDanger:hover {
+  border-color: #d9534f;
+  color: #d9534f;
+}
+
+.viewerClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 .nameWrap {
