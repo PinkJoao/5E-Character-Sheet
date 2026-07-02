@@ -97,6 +97,15 @@ function renderEntry(entry, key) {
           ))}
         </ul>
       );
+    // Item NOMEADO de lista (ex: as opções de Celestial Revelation do Aasimar ou
+    // as estações do Eladrin). Pode ter `entries` (array) OU `entry` (singular).
+    case 'item':
+      return (
+        <div key={key} className={styles.section}>
+          {entry.name && <span className={styles.entryName}>{entry.name}. </span>}
+          {entry.entry != null ? renderInline(String(entry.entry), key) : renderList(entry.entries, key)}
+        </div>
+      );
     case 'inset':
     case 'insetReadaloud':
       return (
@@ -139,7 +148,10 @@ function renderEntry(entry, key) {
         </p>
       );
     default:
-      return entry.entries ? <div key={key}>{renderList(entry.entries, key)}</div> : null;
+      if (entry.entries) return <div key={key}>{renderList(entry.entries, key)}</div>;
+      // Fallback p/ `entry` singular (alguns tipos usam string única).
+      if (entry.entry != null) return <p key={key}>{renderInline(String(entry.entry), key)}</p>;
+      return null;
   }
 }
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createCharacter } from '../schema/character';
-import { collectToolProficiencies, collectLanguages, collectOwned, collectFeatIds } from './proficiency';
+import { collectToolProficiencies, collectLanguages, collectOwned, collectFeatIds, collectSkillProficiencies } from './proficiency';
 
 describe('collectToolProficiencies / collectLanguages — agrega origem + escolhas', () => {
   it('junta ferramentas da origem e de uma escolha de espécie aninhada (recursivo)', () => {
@@ -97,5 +97,21 @@ describe('collectOwned / collectFeatIds — dedup pela ficha', () => {
     expect(owned.tools.has("smith's tools")).toBe(true);
     expect(owned.languages.has('elvish')).toBe(true);
     expect(owned.languages.has('common')).toBe(true); // sempre
+  });
+});
+
+describe('Expertise (Fase 6) — escolhas de classe', () => {
+  it('marca perícias de expertise como nível 2 e expõe owned.expertise', () => {
+    const c = createCharacter();
+    c.origin.skillProficiencies = ['ste', 'slt'];
+    c.classes[0].choices = {
+      'expertise@1': { kind: 'expertise', picks: ['ste'] },
+    };
+    const profs = collectSkillProficiencies(c);
+    expect(profs.ste).toBe(2);
+    expect(profs.slt).toBe(1);
+    const owned = collectOwned(c);
+    expect(owned.expertise.has('ste')).toBe(true);
+    expect(owned.expertise.has('slt')).toBe(false);
   });
 });

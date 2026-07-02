@@ -57,6 +57,22 @@
   color: var(--text-h);
 }
 
+/* Status de pré-requisito: atende / não atende / não checável (confirmar c/ DM) */
+.metaOk {
+  border-color: rgba(80, 200, 120, 0.55);
+  background: rgba(80, 200, 120, 0.1);
+}
+
+.metaBad {
+  border-color: rgba(224, 80, 80, 0.6);
+  background: rgba(224, 80, 80, 0.1);
+}
+
+.metaUnknown {
+  border-color: rgba(230, 180, 60, 0.55);
+  background: rgba(230, 180, 60, 0.1);
+}
+
 .lore {
   margin-top: 12px;
   padding-top: 12px;

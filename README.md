@@ -13,16 +13,19 @@ A character builder for **D&D 5e (2024 rules)**. Mobile-first, runs in the brows
 ## Roadmap
 
 **Done**
-- Character roster and local saving.
-- Species - traits, lore and racial choices.
-- Background - ability boosts, origin feat, proficiencies and language.
-- Class - class, multiclass, subclass, level and class skill proficiencies, with class/subclass info and art in the preview.
+1. Foundation - data layer (5e.tools content, offline cache), local storage, character roster.
+2. Sheet shell - live derived stats (abilities, HP, saves), proficiencies card, tab navigation.
+3. Species - traits, lore and racial choices.
+4. Background - ability boosts, origin feat, proficiencies and language.
+5. Class - class, multiclass, subclass, level and skill proficiencies, with info and art in the preview.
+6. Class progression - per-level choices: feats / ability score increases, fighting style, expertise, weapon mastery. Feat prerequisites are shown and checked against the character (legacy feats count as general feats, with a free +1 bonus).
 
 **Planned**
-- Remaining per-level class choices (ability score increases / feats, fighting styles, expertise, etc.).
-- Skills, Equipment and Spellbook.
-- Export to **Foundry VTT** and **PDF**.
-- A step-by-step wizard for new players.
+7. Skills - consolidated skill view and rolling.
+8. Equipment - inventory and item management.
+9. Spellbook - spell selection for casters.
+10. Export - **Foundry VTT** and **PDF**.
+11. Wizard - step-by-step guided mode for new players.
 
 ## Development
 

@@ -16,7 +16,7 @@
 // `_copy._preserve`.
 const PRESERVE_BLOCKLIST = ['_versions', 'reprintedAs', 'srd', 'basicRules', 'page'];
 
-const idOf = (e) => `${e.name}|${e.source}`;
+const defaultIdOf = (e) => `${e.name}|${e.source}`;
 
 function matchesName(entry, ref) {
   const name = typeof ref === 'string' ? ref : ref?.name;
@@ -81,7 +81,7 @@ function stripCopy(entry) {
   return out;
 }
 
-function resolveOne(entry, byId, seen) {
+function resolveOne(entry, byId, seen, idOf) {
   if (!entry._copy) return entry;
   const key = idOf(entry);
   if (seen.has(key)) return stripCopy(entry); // guarda contra ciclos
@@ -90,7 +90,7 @@ function resolveOne(entry, byId, seen) {
   const ref = byId[idOf(entry._copy)];
   if (!ref) return stripCopy(entry); // pai ausente: devolve o filho sem o marcador
 
-  const parent = resolveOne(ref, byId, seen);
+  const parent = resolveOne(ref, byId, seen, idOf);
   const out = structuredClone(parent);
 
   const preserve = entry._copy._preserve ?? {};
@@ -106,10 +106,17 @@ function resolveOne(entry, byId, seen) {
   return out;
 }
 
-/** Resolve a herança `_copy` numa lista de entradas (raças etc.). */
-export function resolveCopies(list) {
+/**
+ * Resolve a herança `_copy` numa lista de entradas.
+ * @param {object[]} list
+ * @param {(e:object)=>string} [idOf]  id de unicidade — o padrão (name|source)
+ *   serve p/ raças/feats; SUBCLASSES precisam incluir classSource (a cópia
+ *   "compat" de uma subclasse TCE anexada à classe nova colide em name|source
+ *   com a original).
+ */
+export function resolveCopies(list, idOf = defaultIdOf) {
   const arr = list ?? [];
   const byId = {};
   for (const e of arr) byId[idOf(e)] = e;
-  return arr.map((e) => (e._copy ? resolveOne(e, byId, new Set()) : e));
+  return arr.map((e) => (e._copy ? resolveOne(e, byId, new Set(), idOf) : e));
 }

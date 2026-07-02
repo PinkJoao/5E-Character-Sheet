@@ -7,7 +7,13 @@
 // -----------------------------------------------------------------------------
 
 import { latestOnly } from '../reprints';
+import { resolveCopies } from '../copy';
 import { resolveSubclassEntries } from '../../engine/subclassPreview';
+
+// Id de unicidade p/ subclasse: shortName|source|classSource — a cópia "compat"
+// de uma subclasse antiga anexada à classe nova (ex: Armorer TCE → classe EFA)
+// colide com a original em name|source.
+const subclassIdOf = (s) => `${s.shortName ?? s.name}|${s.source}|${s.classSource ?? ''}`;
 
 // Subclasses não usam reprintedAs de forma consistente (e há duplicatas na mesma
 // fonte). Dedup por shortName, preferindo a versão 2024 (XPHB).
@@ -29,7 +35,12 @@ export function makeSubclassEntity(classId, title = 'Subclass') {
     type: 'subclass',
     title,
 
-    list: (db) => dedupeByShortName(latestOnly(db?.[`class-${classId}`]?.subclass ?? [])),
+    // resolveCopies primeiro: cópias "compat" (_copy com _preserve.reprintedAs)
+    // herdam o reprintedAs da original → latestOnly descarta TCE quando há EFA.
+    list: (db) =>
+      dedupeByShortName(
+        latestOnly(resolveCopies(db?.[`class-${classId}`]?.subclass ?? [], subclassIdOf))
+      ),
 
     idOf: (s) => `${s.shortName}|${s.source}`,
 

@@ -37,6 +37,7 @@ export default function SpeciesTab({ character, db, onPick, onClear, onChangeCho
           placeholder="Choose species…"
           onSelect={onPick}
           onClear={onClear}
+          showInfo={false}
         />
       </section>
 
@@ -50,6 +51,7 @@ export default function SpeciesTab({ character, db, onPick, onClear, onChangeCho
             onChange={onChangeChoices}
             db={db}
             owned={ownedFromDb(character, db)}
+            character={character}
           />
         </section>
       )}

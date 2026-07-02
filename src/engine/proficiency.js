@@ -68,6 +68,8 @@ export function collectSkillProficiencies(character) {
   // Escolhas de classe (choice-bag por classe): perícias de nível 1 etc.
   for (const cls of character.classes ?? []) {
     for (const s of collectChoicePicks(cls.choices, 'skill')) mark(s, 1);
+    // Expertise (Rogue/Bard/Ranger): eleva perícias já proficientes ao nível 2.
+    for (const s of collectChoicePicks(cls.choices, 'expertise')) mark(s, 2);
   }
 
   return out;
@@ -137,8 +139,11 @@ export function collectFeatIds(character) {
  * @param {string[]} [grantedLanguages]  idiomas fixos da raça (do db).
  */
 export function collectOwned(character, grantedLanguages = []) {
+  const skillProfs = collectSkillProficiencies(character);
   return {
-    skills: new Set(Object.keys(collectSkillProficiencies(character))),
+    skills: new Set(Object.keys(skillProfs)),
+    // Perícias já com expertise (nível 2) — dedup das escolhas de Expertise.
+    expertise: new Set(Object.keys(skillProfs).filter((s) => skillProfs[s] === 2)),
     tools: new Set(collectToolProficiencies(character).map((t) => t.toLowerCase())),
     languages: new Set(collectLanguages(character, grantedLanguages).map((l) => l.toLowerCase())),
     feats: new Set(collectFeatIds(character)),

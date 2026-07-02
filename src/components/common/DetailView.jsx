@@ -11,6 +11,14 @@ import EntryContent from './EntryContent';
 import { imgUrl } from './media';
 import styles from './DetailView.module.css';
 
+const STATUS_CLASS = { ok: 'metaOk', bad: 'metaBad', unknown: 'metaUnknown' };
+
+/** Classe do chip de meta: destaque simples OU status de pré-requisito. */
+function metaClass(m) {
+  const extra = m.status ? styles[STATUS_CLASS[m.status]] : m.highlight ? styles.metaHi : '';
+  return extra ? `${styles.metaItem} ${extra}` : styles.metaItem;
+}
+
 export default function DetailView({ entity, raw, db }) {
   const [imgOk, setImgOk] = useState(true);
   if (!raw) return null;
@@ -36,8 +44,8 @@ export default function DetailView({ entity, raw, db }) {
 
       {meta.length > 0 && (
         <div className={styles.meta}>
-          {meta.map((m) => (
-            <span key={m.label} className={m.highlight ? `${styles.metaItem} ${styles.metaHi}` : styles.metaItem}>
+          {meta.map((m, i) => (
+            <span key={`${m.label}-${i}`} className={metaClass(m)}>
               <b>{m.label}</b> {m.value}
             </span>
           ))}

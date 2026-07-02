@@ -118,6 +118,33 @@ function parseStlField(field, push) {
   }
 }
 
+/**
+ * Lê o campo `ability` de um TALENTO (ASI embutido). Cada entrada com `choose` é
+ * uma ALTERNATIVA (o feat "Ability Score Improvement" tem duas: +2 em um OU +1
+ * em dois); a maioria dos feats General tem uma só (+1 em str/dex, etc.).
+ * Vira UM Choice kind 'ability' com pool {type:'ability', alternatives:[...]},
+ * onde cada alternativa é {from, count, amount} normalizada.
+ */
+function parseAbilityField(field, push) {
+  const alternatives = [];
+  for (const entry of field ?? []) {
+    if (!entry || typeof entry !== 'object' || !entry.choose) continue;
+    const c = entry.choose;
+    alternatives.push({
+      from: c.from ?? [],
+      count: c.count ?? 1,
+      amount: c.amount ?? 1,
+    });
+  }
+  if (alternatives.length === 0) return;
+  push({
+    kind: 'ability',
+    count: 1,
+    label: 'Ability Score Increase',
+    pool: { type: 'ability', alternatives },
+  });
+}
+
 /** Lê o campo `feats` (concede talento à escolha — recursivo). */
 function parseFeatField(field, push) {
   for (const entry of field ?? []) {
@@ -144,6 +171,7 @@ function parseFeatField(field, push) {
 export function parseChoices(entity) {
   const raw = [];
   const push = (c) => raw.push(c);
+  parseAbilityField(entity?.ability, push);
   parseProfField(entity?.skillProficiencies, 'skill', push);
   parseProfField(entity?.toolProficiencies, 'tool', push);
   parseProfField(entity?.languageProficiencies, 'language', push);
@@ -177,6 +205,29 @@ export function collectChoicePicks(bag, kind, out = []) {
     }
     if (choice.sub) {
       for (const sub of Object.values(choice.sub)) collectChoicePicks(sub, kind, out);
+    }
+  }
+  return out;
+}
+
+/**
+ * Caminha recursivamente por um choice-bag e junta os aumentos de atributo
+ * (choices kind 'ability', com picks {ability, amount}) — inclusive os embutidos
+ * em talentos escolhidos (sub-bags, ex: ASI dentro de um slot de feat de classe).
+ * @param {object} bag
+ * @param {{ability:string, amount:number}[]} [out]
+ * @returns {{ability:string, amount:number}[]}
+ */
+export function collectAbilityPicks(bag, out = []) {
+  for (const choice of Object.values(bag ?? {})) {
+    if (!choice || typeof choice !== 'object') continue;
+    if (choice.kind === 'ability') {
+      for (const pick of choice.picks ?? []) {
+        if (pick && typeof pick === 'object' && pick.ability && pick.amount) out.push(pick);
+      }
+    }
+    if (choice.sub) {
+      for (const sub of Object.values(choice.sub)) collectAbilityPicks(sub, out);
     }
   }
   return out;

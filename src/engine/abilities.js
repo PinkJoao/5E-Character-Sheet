@@ -8,6 +8,7 @@
 
 import { ABILITIES } from '../schema/character';
 import { abilityModifier } from './math';
+import { collectAbilityPicks } from './choices';
 
 /**
  * Coleta todos os boosts de atributo registrados no personagem.
@@ -28,7 +29,12 @@ export function collectAbilityBoosts(character) {
   const speciesBoosts = character.species?.choices?.abilityBoosts;
   if (Array.isArray(speciesBoosts)) boosts.push(...speciesBoosts);
 
-  // (ASIs de classe e talentos com ASI embutido entram no 5c-2b, via choice-bag.)
+  // Choice-bags (recursivo): ASIs de classe e talentos com ASI embutido — o
+  // collectAbilityPicks desce nos sub-bags (feat escolhido num slot de ASI etc.).
+  for (const cls of character.classes ?? []) boosts.push(...collectAbilityPicks(cls.choices));
+  boosts.push(...collectAbilityPicks(character.species?.choices));
+  boosts.push(...collectAbilityPicks(character.origin?.originFeat?.choices));
+  boosts.push(...collectAbilityPicks(character.origin?.choices));
 
   return boosts;
 }

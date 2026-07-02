@@ -1,13 +1,16 @@
 // =============================================================================
-// PickerField — gatilho do seletor universal (SelectorPanel) com clear-x
+// PickerField — gatilho do seletor universal (SelectorPanel) com clear-x e info
 // =============================================================================
 // Campo de valor único respaldado pelo SelectorPanel: mostra o valor escolhido
 // (nome + fonte discreta), abre o painel ao clicar e tem um × para limpar.
-// Gerencia o próprio estado de aberto/fechado. Usado p/ espécie, talento, etc.
+// Com `showInfo` (padrão LIGADO), um botão ⓘ abre a descrição do item já
+// selecionado (DetailView em overlay) — útil p/ reler um talento, arma etc.
+// Espécie/classe/subclasse desligam (a descrição já aparece na própria aba).
 // -----------------------------------------------------------------------------
 
 import { useState } from 'react';
 import SelectorPanel from '../../selector/SelectorPanel';
+import DetailView from './DetailView';
 import styles from './PickerField.module.css';
 
 /**
@@ -18,9 +21,25 @@ import styles from './PickerField.module.css';
  * @param {string}   props.placeholder
  * @param {(raw:object)=>void} props.onSelect
  * @param {()=>void} props.onClear
+ * @param {(raw:object)=>boolean} [props.exclude]
+ * @param {boolean}  [props.showInfo=true]  botão ⓘ com a descrição do selecionado
  */
-export default function PickerField({ entity, db, current, placeholder, onSelect, onClear, exclude }) {
+export default function PickerField({
+  entity,
+  db,
+  current,
+  placeholder,
+  onSelect,
+  onClear,
+  exclude,
+  showInfo = true,
+}) {
   const [open, setOpen] = useState(false);
+  const [info, setInfo] = useState(false);
+
+  // Resolve o objeto cru do item selecionado (só quando o info abre).
+  const currentRaw =
+    info && current?.id ? (entity.list(db) ?? []).find((r) => entity.idOf(r) === current.id) : null;
 
   return (
     <>
@@ -35,6 +54,11 @@ export default function PickerField({ entity, db, current, placeholder, onSelect
             <span className={styles.ph}>{placeholder}</span>
           )}
         </button>
+        {current && showInfo && (
+          <button type="button" className={styles.infoBtn} onClick={() => setInfo(true)} aria-label={`About ${current.label}`}>
+            i
+          </button>
+        )}
         {current && (
           <button type="button" className={styles.clearX} onClick={onClear} aria-label="Clear">
             ×
@@ -54,6 +78,25 @@ export default function PickerField({ entity, db, current, placeholder, onSelect
           }}
           onClose={() => setOpen(false)}
         />
+      )}
+
+      {info && (
+        <div className={styles.infoOverlay} onClick={() => setInfo(false)}>
+          <div className={styles.infoPanel} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.infoHead}>
+              <button type="button" className={styles.infoClose} onClick={() => setInfo(false)} aria-label="Close">
+                ✕
+              </button>
+            </div>
+            <div className={styles.infoScroll}>
+              {currentRaw ? (
+                <DetailView entity={entity} raw={currentRaw} db={db} />
+              ) : (
+                <p className={styles.infoMuted}>No description available.</p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

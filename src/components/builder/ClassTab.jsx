@@ -11,6 +11,12 @@ import { useState } from 'react';
 import { createClassEntry } from '../../schema/character';
 import { resolveClassObj, ownedFromDb } from '../../engine/resolve';
 import { parseClass } from '../../engine/classData';
+import {
+  classLevelChoices,
+  pruneChoicesAboveLevel,
+  weaponMasteryCount,
+} from '../../engine/classFeatureChoices';
+import { collectSkillProficiencies } from '../../engine/proficiency';
 import { SKILL_LABEL } from './labels';
 import PickerField from '../common/PickerField';
 import ChoiceList from './ChoiceList';
@@ -64,13 +70,23 @@ export default function ClassTab({ character, db, onChange }) {
   const clearClass = (i) =>
     updateClass(i, { classId: '', source: '', subclassId: null, subclassSource: null, choices: {} });
   // Baixar o nível abaixo do nível de subclasse REVERTE a subclasse (e o que ela
-  // concede). (A derivação já reverte o resto ao remover classe/raça.)
+  // concede); também PODA escolhas de níveis perdidos (feat@8 etc.) e apara o
+  // Weapon Mastery se o novo nível cobrir menos armas.
   const setLevel = (i, level) => {
     const patch = { level };
     if (level < subclassLevel) {
       patch.subclassId = null;
       patch.subclassSource = null;
     }
+    const pruned = pruneChoicesAboveLevel(classes[i].choices, level);
+    if (pruned.weaponMastery?.picks) {
+      const clsObj = resolveClassObj(db, classes[i].classId, classes[i].source);
+      const max = weaponMasteryCount(clsObj, level);
+      if (pruned.weaponMastery.picks.length > max) {
+        pruned.weaponMastery = { ...pruned.weaponMastery, picks: pruned.weaponMastery.picks.slice(0, max) };
+      }
+    }
+    patch.choices = pruned;
     updateClass(i, patch);
   };
   const pickSubclass = (i, raw) => updateClass(i, { subclassId: raw.shortName, subclassSource: raw.source });
@@ -90,7 +106,20 @@ export default function ClassTab({ character, db, onChange }) {
   const classObj = c.classId ? resolveClassObj(db, c.classId, c.source) : null;
   const parsed = classObj ? parseClass(classObj) : null;
   const maxForThis = MAX_TOTAL - (total - (c.level || 0));
-  const choices = parsed ? classChoices(parsed, c.isOriginalClass) : [];
+
+  // Escolhas: perícias iniciais (original) + POR NÍVEL (feat/ASI, fighting
+  // style, expertise, weapon mastery). O pool de expertise é restrito às
+  // perícias em que o personagem JÁ é proficiente.
+  const profSkillOptions = Object.keys(collectSkillProficiencies(character)).map((code) => ({
+    value: code,
+    label: SKILL_LABEL[code] ?? code,
+  }));
+  const levelChoices = parsed
+    ? classLevelChoices(parsed, classObj, c.level).map((ch) =>
+        ch.kind === 'expertise' ? { ...ch, pool: { type: 'list', options: profSkillOptions } } : ch,
+      )
+    : [];
+  const choices = [...(parsed ? classChoices(parsed, c.isOriginalClass) : []), ...levelChoices];
 
   return (
     <div className={styles.tab}>
@@ -134,6 +163,7 @@ export default function ClassTab({ character, db, onChange }) {
             c.classId ? { label: c.classId, source: c.source, id: `${capitalize(c.classId)}|${c.source}` } : null
           }
           placeholder="Choose class…"
+          showInfo={false}
           onSelect={(raw) => pickClass(idx, raw)}
           onClear={() => clearClass(idx)}
           exclude={(raw) => {
@@ -179,6 +209,7 @@ export default function ClassTab({ character, db, onChange }) {
                 c.subclassId ? { label: c.subclassId, source: c.subclassSource, id: `${c.subclassId}|${c.subclassSource}` } : null
               }
               placeholder="Choose subclass…"
+              showInfo={false}
               onSelect={(raw) => pickSubclass(idx, raw)}
               onClear={() => clearSubclass(idx)}
             />
@@ -193,6 +224,7 @@ export default function ClassTab({ character, db, onChange }) {
               onChange={(ch) => setClassChoices(idx, ch)}
               db={db}
               owned={owned}
+              character={character}
             />
           </div>
         )}

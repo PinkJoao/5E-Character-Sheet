@@ -12,11 +12,12 @@
 import { ABILITIES } from '../../schema/character';
 import { parseChoices } from '../../engine/choices';
 import { resolveFeat, ownedFromDb } from '../../engine/resolve';
+import { prereqContext } from '../../engine/prereq';
 import { ABILITY_FULL } from './labels';
 import ClearableSelect from '../common/ClearableSelect';
 import PickerField from '../common/PickerField';
 import ChoiceList from './ChoiceList';
-import originFeatEntity from '../../selector/entities/feat';
+import { makeFeatEntity } from '../../selector/entities/feat';
 import styles from './BackgroundTab.module.css';
 
 // Escolhas FIXAS da origem custom 2024 — descritores p/ o ChoiceList (mesmo
@@ -43,6 +44,9 @@ export default function BackgroundTab({ character, db, onChangeOrigin }) {
 
   // Tudo que a ficha já tem (dedup): não deixar escolher a mesma coisa 2×.
   const owned = ownedFromDb(character, db);
+
+  // Entity de talento de origem ciente do personagem (colore pré-requisitos).
+  const originFeatEntity = makeFeatEntity(['O'], 'Origin Feat', prereqContext(character, { db }));
 
   // --- Ability boosts ---
   const setMode = (m) => {
@@ -132,7 +136,7 @@ export default function BackgroundTab({ character, db, onChangeOrigin }) {
         />
         {featChoices.length > 0 && (
           <div className={styles.featChoices}>
-            <ChoiceList choices={featChoices} bag={originFeat.choices} onChange={setFeatChoices} db={db} owned={owned} />
+            <ChoiceList choices={featChoices} bag={originFeat.choices} onChange={setFeatChoices} db={db} owned={owned} character={character} />
           </div>
         )}
       </section>
@@ -149,6 +153,7 @@ export default function BackgroundTab({ character, db, onChangeOrigin }) {
           onChange={setOriginChoices}
           db={db}
           owned={owned}
+          character={character}
         />
       </section>
     </div>

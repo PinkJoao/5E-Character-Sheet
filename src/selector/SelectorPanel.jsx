@@ -10,6 +10,9 @@ import { applyFilters, deriveOptions, cycleOption } from './filterModel';
 import DetailView from '../components/common/DetailView';
 import styles from './SelectorPanel.module.css';
 
+/* Cores dos badges de pré-requisito nos cards (atende / não atende / incerto). */
+const PREREQ_CLASS = { ok: 'preOk', bad: 'preBad', unknown: 'preUnknown' };
+
 export default function SelectorPanel({ entity, db, currentId, onSelect, onClose, exclude }) {
   const [query, setQuery] = useState('');
   const [filterState, setFilterState] = useState({});
@@ -168,6 +171,15 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
                       <span className={styles.cardTitle}>{card.title}</span>
                       <span className={styles.cardSub}>{card.subtitle}</span>
                       {card.meta && <span className={styles.cardMeta}>{card.meta}</span>}
+                      {card.prereqs?.length > 0 && (
+                        <span className={styles.badges}>
+                          {card.prereqs.map((p, pi) => (
+                            <em key={pi} className={`${styles.prereq} ${styles[PREREQ_CLASS[p.status]] ?? ''}`}>
+                              {p.text}
+                            </em>
+                          ))}
+                        </span>
+                      )}
                       {card.badges?.length > 0 && (
                         <span className={styles.badges}>
                           {card.badges.map((b) => (

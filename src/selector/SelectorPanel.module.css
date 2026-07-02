@@ -289,6 +289,28 @@
   color: var(--accent);
 }
 
+/* Pré-requisitos no card (coloridos pelo status contra o personagem). */
+.prereq {
+  font-style: normal;
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.preOk {
+  border-color: rgba(80, 200, 120, 0.55);
+  background: rgba(80, 200, 120, 0.1);
+}
+.preBad {
+  border-color: rgba(224, 80, 80, 0.6);
+  background: rgba(224, 80, 80, 0.1);
+}
+.preUnknown {
+  border-color: rgba(230, 180, 60, 0.55);
+  background: rgba(230, 180, 60, 0.1);
+}
+
 /* ---- Preview ---- */
 .preview {
   border-left: 1px solid var(--border);

@@ -121,6 +121,61 @@
   border-color: var(--accent-border);
 }
 
+/* ability choice (ASI embutido em talento) */
+.abilityChoice {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.modeBtn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.modeBtn:hover {
+  border-color: var(--accent-border);
+  color: var(--text-h);
+}
+
+.modeActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 600;
+}
+
+.abilityRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.abilityRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.abilityAmount {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 24px;
+  text-align: center;
+}
+
 /* feat slots + recursive nesting */
 .featSlot {
   display: flex;
