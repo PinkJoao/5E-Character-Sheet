@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import { createClassEntry } from '../../schema/character';
-import { resolveClassObj, ownedFromDb } from '../../engine/resolve';
+import { resolveClassObj, resolveSubclassObj, ownedFromDb } from '../../engine/resolve';
 import { parseClass } from '../../engine/classData';
 import {
   classLevelChoices,
@@ -20,6 +20,7 @@ import { collectSkillProficiencies } from '../../engine/proficiency';
 import { SKILL_LABEL } from './labels';
 import PickerField from '../common/PickerField';
 import ChoiceList from './ChoiceList';
+import ClassProgression from './ClassProgression';
 import classEntity from '../../selector/entities/class';
 import { makeSubclassEntity } from '../../selector/entities/subclass';
 import styles from './ClassTab.module.css';
@@ -229,6 +230,18 @@ export default function ClassTab({ character, db, onChange }) {
           </div>
         )}
       </div>
+
+      {/* Progressão de features (classe + subclasse) — descritivo, fica ABAIXO
+          dos seletores/escolhas. */}
+      {c.classId && classObj && (
+        <ClassProgression
+          db={db}
+          classId={c.classId}
+          classObj={classObj}
+          subclass={c.subclassId ? resolveSubclassObj(db, c.classId, c.subclassId, c.subclassSource) : null}
+          level={c.level}
+        />
+      )}
 
       <p className={styles.summary}>
         Total level: {total} / {MAX_TOTAL}

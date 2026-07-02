@@ -49,13 +49,15 @@ export function resolveSubclassObj(db, classId, subclassId, subclassSource) {
   const file = db[`class-${classId}`];
   const list = file?.subclass;
   if (!Array.isArray(list)) return null;
-  const matches = list.filter((s) => s.shortName === subclassId);
+  let matches = list.filter((s) => s.shortName === subclassId);
   if (matches.length === 0) return null;
   if (subclassSource) {
-    const m = matches.find((s) => s.source === subclassSource);
-    if (m) return m;
+    const bySource = matches.filter((s) => s.source === subclassSource);
+    if (bySource.length) matches = bySource;
   }
-  return matches[matches.length - 1];
+  // Entre empates (ex: original TCE × stub "compat" _copy sem features),
+  // prefere a versão COMPLETA (com subclassFeatures).
+  return matches.findLast((s) => Array.isArray(s.subclassFeatures)) ?? matches[matches.length - 1];
 }
 
 /**

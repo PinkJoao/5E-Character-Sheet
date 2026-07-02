@@ -196,3 +196,8 @@ export default function EntryContent({ entries }) {
   if (!entries?.length) return null;
   return <div className={styles.content}>{renderList(entries, 'e')}</div>;
 }
+
+/** Render INLINE de uma string 5etools (tags {@...}) — p/ headers de tabela etc. */
+export function InlineEntry({ text }) {
+  return renderInline(String(text ?? ''), 'inl');
+}

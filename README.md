@@ -17,7 +17,7 @@ A character builder for **D&D 5e (2024 rules)**. Mobile-first, runs in the brows
 2. Sheet shell - live derived stats (abilities, HP, saves), proficiencies card, tab navigation, portrait upload.
 3. Species - traits, lore and racial choices.
 4. Background - ability boosts, origin feat, proficiencies and language.
-5. Class - class, multiclass, subclass, level and skill proficiencies, with info and art in the preview.
+5. Class - class, multiclass, subclass, level and skill proficiencies, with info and art in the preview. Feature progression view (unlocked or full 1-20) and the class table.
 6. Class progression - per-level choices: feats / ability score increases, fighting style, expertise, weapon mastery. Feat prerequisites are shown and checked against the character (legacy feats count as general feats, with a free +1 bonus).
 
 **Planned**

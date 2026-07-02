@@ -27,12 +27,13 @@ function parseRef(ref) {
 }
 
 /**
+ * Lista de features da subclasse com refs resolvidas/inlinadas.
  * @param {object} db
  * @param {string} classId       ex: 'fighter'
  * @param {object} subclass      objeto de subclasse (com subclassFeatures[])
- * @returns {Array} entries prontos p/ EntryContent
+ * @returns {{name:string, level:number, entries:Array}[]}
  */
-export function resolveSubclassEntries(db, classId, subclass) {
+export function subclassFeatureList(db, classId, subclass) {
   const features = db?.[`class-${classId}`]?.subclassFeature ?? [];
   if (!Array.isArray(subclass?.subclassFeatures)) return [];
 
@@ -74,16 +75,24 @@ export function resolveSubclassEntries(db, classId, subclass) {
     return out;
   };
 
-  const sections = [];
+  const out = [];
   for (const ref of subclass.subclassFeatures) {
     const f = find(parseRef(ref));
     if (!f || seen.has(keyOf(f))) continue;
     seen.add(keyOf(f));
-    sections.push({
-      type: 'entries',
-      name: `Level ${f.level}: ${f.name}`,
-      entries: expand(f.entries),
-    });
+    out.push({ name: f.name, level: f.level, entries: expand(f.entries) });
   }
-  return sections;
+  return out;
+}
+
+/**
+ * Entries prontos p/ o EntryContent (preview do seletor de subclasse).
+ * @returns {Array}
+ */
+export function resolveSubclassEntries(db, classId, subclass) {
+  return subclassFeatureList(db, classId, subclass).map((f) => ({
+    type: 'entries',
+    name: `Level ${f.level}: ${f.name}`,
+    entries: f.entries,
+  }));
 }
