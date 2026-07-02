@@ -23,6 +23,12 @@ const ALIGNMENT_LABEL = {
   LE: 'Lawful Evil', NE: 'Neutral Evil', CE: 'Chaotic Evil',
 };
 const ALIGNMENT_ORDER = ['LG', 'NG', 'CG', 'LN', 'N', 'CN', 'LE', 'NE', 'CE'];
+// Eixo moral → classe de cor (bons azuis, neutros roxos, maus vermelhos).
+const ALIGNMENT_GROUP = {
+  LG: 'alignGood', NG: 'alignGood', CG: 'alignGood',
+  LN: 'alignNeutral', N: 'alignNeutral', CN: 'alignNeutral',
+  LE: 'alignEvil', NE: 'alignEvil', CE: 'alignEvil',
+};
 
 export default function StatsHeader({
   derived,
@@ -161,17 +167,21 @@ function AlignmentTile({ current, onSelect }) {
       {open && (
         <div className={styles.tileBody}>
           <div className={styles.alignGrid}>
-            {ALIGNMENT_ORDER.map((code) => (
-              <button
-                key={code}
-                type="button"
-                title={ALIGNMENT_LABEL[code]}
-                className={current === code ? `${styles.alignBtn} ${styles.alignSel}` : styles.alignBtn}
-                onClick={() => onSelect(current === code ? '' : code)}
-              >
-                {code}
-              </button>
-            ))}
+            {ALIGNMENT_ORDER.map((code) => {
+              const group = styles[ALIGNMENT_GROUP[code]];
+              const cls = `${styles.alignBtn} ${group}${current === code ? ` ${styles.alignSel}` : ''}`;
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  title={ALIGNMENT_LABEL[code]}
+                  className={cls}
+                  onClick={() => onSelect(current === code ? '' : code)}
+                >
+                  {code}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

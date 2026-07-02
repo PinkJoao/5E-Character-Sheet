@@ -169,21 +169,26 @@ button.tileHead:hover {
 /* --- Alignment picker (9 options) ------------------------------------------ */
 .alignGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* minmax(0,1fr): sem piso de min-content — as células podem encolher de
+     verdade em telas estreitas (senão o grid estoura o card por uns px). */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   justify-items: center;
-  gap: 5px;
-  padding: 8px;
+  /* Fluido: em telas estreitas o grid perde padding/gap e os botões (1fr +
+     aspect-ratio) encolhem junto, sempre centralizados no mini card. */
+  gap: clamp(3px, 1.2vw, 5px);
+  padding: clamp(4px, 1.6vw, 8px) clamp(3px, 1.2vw, 8px);
 }
 
 .alignBtn {
   /* Quadrados: largura da célula (capada) e altura = largura (aspect-ratio). */
   width: 100%;
+  min-width: 0;
   max-width: 52px;
   aspect-ratio: 1;
   display: grid;
   place-items: center;
   font: inherit;
-  font-size: clamp(9px, 2.9vw, 11px);
+  font-size: clamp(8px, 2.8vw, 11px);
   font-weight: 600;
   padding: 0;
   border: 1px solid var(--border);
@@ -194,14 +199,43 @@ button.tileHead:hover {
 }
 
 .alignBtn:hover {
-  border-color: var(--accent-border);
   color: var(--text-h);
+  filter: brightness(1.15);
 }
 
-.alignSel {
+/* Tinta leve por eixo moral: bons azuis, neutros roxos (accent), maus vermelhos. */
+.alignGood {
+  border-color: rgba(90, 150, 255, 0.35);
+  background: rgba(90, 150, 255, 0.1);
+}
+
+.alignNeutral {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.alignEvil {
+  border-color: rgba(224, 80, 80, 0.35);
+  background: rgba(224, 80, 80, 0.1);
+}
+
+/* Selecionado: cor plena do eixo. */
+.alignGood.alignSel {
+  border-color: #5a96ff;
+  color: #9dbfff;
+  background: rgba(90, 150, 255, 0.22);
+}
+
+.alignNeutral.alignSel {
   border-color: var(--accent);
   color: var(--accent);
   background: var(--accent-bg);
+}
+
+.alignEvil.alignSel {
+  border-color: #e05050;
+  color: #ff9a9a;
+  background: rgba(224, 80, 80, 0.22);
 }
 
 /* --- Abilities grid -------------------------------------------------------- */
