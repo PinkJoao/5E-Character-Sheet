@@ -10,6 +10,8 @@
 // TODAS as features da subclasse antes de escolher (como o Plutonium importa).
 // -----------------------------------------------------------------------------
 
+import { resolveOptionalRefs } from './optionalFeatures';
+
 const norm = (s) => (s ?? '').toString().trim().toLowerCase();
 
 /** Chave forte (com fonte) e chave frouxa (sem fonte) de uma feature. */
@@ -80,7 +82,9 @@ export function subclassFeatureList(db, classId, subclass) {
     const f = find(parseRef(ref));
     if (!f || seen.has(keyOf(f))) continue;
     seen.add(keyOf(f));
-    out.push({ name: f.name, level: f.level, entries: expand(f.entries) });
+    // Depois de inlinar sub-features, resolve as optional features (manobras,
+    // invocations…) para o texto completo.
+    out.push({ name: f.name, level: f.level, entries: resolveOptionalRefs(expand(f.entries), db) });
   }
   return out;
 }

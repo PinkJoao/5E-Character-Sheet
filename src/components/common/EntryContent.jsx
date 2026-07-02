@@ -8,6 +8,7 @@
 // -----------------------------------------------------------------------------
 
 import { imgUrl } from './media';
+import TableViewer from './TableViewer';
 import styles from './EntryContent.module.css';
 
 // --- Inline: resolve as tags {@tag conteúdo} (com aninhamento balanceado) ----
@@ -167,8 +168,8 @@ function refName(ref) {
 function renderTable(entry, key) {
   const rows = entry.rows ?? [];
   return (
-    <div key={key} className={styles.tableWrap}>
-      <table className={styles.table}>
+    <TableViewer key={key}>
+      <table className="data-table">
         {entry.colLabels && (
           <thead>
             <tr>
@@ -188,7 +189,7 @@ function renderTable(entry, key) {
           ))}
         </tbody>
       </table>
-    </div>
+    </TableViewer>
   );
 }
 

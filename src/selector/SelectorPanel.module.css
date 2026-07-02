@@ -289,6 +289,20 @@
   color: var(--accent);
 }
 
+/* Tons de badge: caster azul / half caster accent / martial vermelho. */
+.toneBlue {
+  background: rgba(90, 150, 255, 0.14);
+  color: #7fb0ff;
+}
+.toneAccent {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.toneRed {
+  background: rgba(224, 80, 80, 0.14);
+  color: #ff8a8a;
+}
+
 /* Pré-requisitos no card (coloridos pelo status contra o personagem). */
 .prereq {
   font-style: normal;

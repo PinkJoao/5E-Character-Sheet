@@ -43,33 +43,8 @@
   opacity: 0.9;
 }
 
-.tableWrap {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 0 10px;
-}
-
-.table {
-  width: 100%;
-  max-width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  margin: 0;
-  font-size: 13px;
-}
-
-.table th,
-.table td {
-  border: 1px solid var(--border);
-  padding: 4px 6px;
-  text-align: left;
-  overflow-wrap: break-word;
-}
-
-.table th {
-  color: var(--text-h);
-  background: var(--bg-soft);
-}
+/* Tabelas agora usam o padrão global `.data-table` dentro do TableViewer
+   (scroll horizontal natural + tela cheia) — sem compressão forçada. */
 
 .ref {
   color: var(--text-h);

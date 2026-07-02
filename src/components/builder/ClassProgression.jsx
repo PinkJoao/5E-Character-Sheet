@@ -15,6 +15,7 @@
 import { useState } from 'react';
 import { classFeatureLevels, isLongFeature, classTable } from '../../engine/classProgression';
 import EntryContent, { InlineEntry } from '../common/EntryContent';
+import TableViewer from '../common/TableViewer';
 import styles from './ClassProgression.module.css';
 
 export default function ClassProgression({ db, classId, classObj, subclass, level }) {
@@ -23,7 +24,30 @@ export default function ClassProgression({ db, classId, classObj, subclass, leve
 
   const levels = classFeatureLevels(db, classId, classObj, subclass);
   const shown = mode === 'unlocked' ? levels.filter((l) => l.level <= level) : levels;
-  const table = classTable(classObj);
+  const table = classTable(classObj, subclass);
+
+  const renderTable = (rows) => (
+    <table className="data-table data-table--center">
+      <thead>
+        <tr>
+          {table.cols.map((c, i) => (
+            <th key={i}>
+              <InlineEntry text={c} />
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row[0]} className={row[0] === String(level) ? styles.rowCurrent : undefined}>
+            {row.map((v, i) => (
+              <td key={i}>{v}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 
   return (
     <section className={styles.progression}>
@@ -35,7 +59,7 @@ export default function ClassProgression({ db, classId, classObj, subclass, leve
             className={mode === 'unlocked' ? `${styles.modeBtn} ${styles.modeActive}` : styles.modeBtn}
             onClick={() => setMode('unlocked')}
           >
-            Unlocked
+            Current
           </button>
           <button
             type="button"
@@ -48,36 +72,16 @@ export default function ClassProgression({ db, classId, classObj, subclass, leve
       </div>
 
       {table && (
-        <div className={styles.tableBox}>
-          <div className={styles.tableScroll}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  {table.cols.map((c, i) => (
-                    <th key={i}>
-                      <InlineEntry text={c} />
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {(fullTable ? table.rows : table.rows.slice(level - 1, level)).map((row) => {
-                  const isCurrent = row[0] === String(level);
-                  return (
-                    <tr key={row[0]} className={isCurrent ? styles.rowCurrent : undefined}>
-                      {row.map((v, i) => (
-                        <td key={i}>{v}</td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <button type="button" className={styles.tableToggle} onClick={() => setFullTable((v) => !v)}>
-            {fullTable ? 'Show current level only' : 'Show full table'}
-          </button>
-        </div>
+        <TableViewer
+          fullscreenChildren={renderTable(table.rows)}
+          footer={
+            <button type="button" className={styles.tableToggle} onClick={() => setFullTable((v) => !v)}>
+              {fullTable ? 'Show current level only' : 'Show full table'}
+            </button>
+          }
+        >
+          {renderTable(fullTable ? table.rows : table.rows.slice(level - 1, level))}
+        </TableViewer>
       )}
 
       {shown.length === 0 ? (
@@ -87,7 +91,7 @@ export default function ClassProgression({ db, classId, classObj, subclass, leve
           <div key={l.level} className={l.level > level ? `${styles.levelBlock} ${styles.future}` : styles.levelBlock}>
             <div className={styles.levelHead}>
               Level {l.level}
-              {l.level > level && <span className={styles.futureTag}>future</span>}
+              {l.level > level && <span className={styles.futureTag}>Locked</span>}
             </div>
             {l.features.map((f) => (
               <FeatureCard key={f.key} feature={f} subclassName={subclass?.shortName} />
@@ -110,7 +114,7 @@ function FeatureCard({ feature, subclassName }) {
       <button type="button" className={styles.featureHead} onClick={() => setOpen((v) => !v)} aria-expanded={open}>
         <span className={styles.featureName}>{feature.name}</span>
         {sub && <span className={styles.subTag}>{subclassName ?? 'Subclass'}</span>}
-        {!open && long && <span className={styles.longHint}>long</span>}
+        {!open && long && <span className={styles.longHint}>Options</span>}
         <span className={styles.chevron}>{open ? '▴' : '▾'}</span>
       </button>
       {open && (

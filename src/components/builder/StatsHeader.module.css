@@ -109,7 +109,7 @@ button.tileHead:hover {
 .breakRow .bSub {
   font-size: clamp(9px, 2.9vw, 11px);
   font-style: normal;
-  color: var(--src-class);
+  color: var(--accent);
   opacity: 0.85;
 }
 
@@ -121,7 +121,7 @@ button.tileHead:hover {
 
 .die {
   font-size: clamp(10px, 3.2vw, 12px);
-  color: var(--src-class);
+  color: var(--accent);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;

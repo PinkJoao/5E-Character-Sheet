@@ -186,7 +186,7 @@
 .nested {
   margin-left: 14px;
   padding-left: 14px;
-  border-left: 2px solid var(--src-origin);
+  border-left: 2px solid var(--accent-border);
   display: flex;
   flex-direction: column;
   gap: 12px;

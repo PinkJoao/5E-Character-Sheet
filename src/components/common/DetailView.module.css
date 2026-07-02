@@ -57,6 +57,25 @@
   color: var(--text-h);
 }
 
+/* Tons (tipos de classe): caster azul / half caster accent / martial vermelho. */
+.toneBlue {
+  border-color: rgba(90, 150, 255, 0.45);
+  background: rgba(90, 150, 255, 0.12);
+  color: #7fb0ff;
+}
+
+.toneAccent {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.toneRed {
+  border-color: rgba(224, 80, 80, 0.45);
+  background: rgba(224, 80, 80, 0.12);
+  color: #ff8a8a;
+}
+
 /* Status de pré-requisito: atende / não atende / não checável (confirmar c/ DM) */
 .metaOk {
   border-color: rgba(80, 200, 120, 0.55);

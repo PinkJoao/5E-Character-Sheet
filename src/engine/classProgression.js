@@ -10,6 +10,7 @@
 
 import { parseFeatureRef } from './classData';
 import { subclassFeatureList } from './subclassPreview';
+import { resolveOptionalRefs } from './optionalFeatures';
 
 const norm = (s) => (s ?? '').toString().trim().toLowerCase();
 
@@ -37,7 +38,7 @@ function classFeatureItems(db, classId, classObj) {
     const f =
       byStrong.get(`${norm(r.name)}|${norm(r.source || classObj.source)}|${r.level}`) ??
       byLoose.get(`${norm(r.name)}|${r.level}`);
-    if (f) out.push({ name: f.name, level: f.level, entries: f.entries ?? [] });
+    if (f) out.push({ name: f.name, level: f.level, entries: resolveOptionalRefs(f.entries ?? [], db) });
   }
   return out;
 }
@@ -115,12 +116,18 @@ function cellText(v) {
 
 /**
  * Achata os classTableGroups numa tabela única: colunas (labels crus, podem
- * ter {@filter}) e 20 linhas [Level, PB, ...valores].
+ * ter {@filter}) e 20 linhas [Level, PB, ...valores]. Subclasses com progressão
+ * própria (Eldritch Knight, Arcane Trickster…) contribuem com seus
+ * `subclassTableGroups` no final.
  * @param {object} classObj
+ * @param {object} [subclass]
  * @returns {{cols: string[], rows: string[][]}|null}
  */
-export function classTable(classObj) {
-  const groups = classObj?.classTableGroups ?? [];
+export function classTable(classObj, subclass = null) {
+  const groups = [
+    ...(classObj?.classTableGroups ?? []),
+    ...(subclass?.subclassTableGroups ?? []),
+  ];
   if (groups.length === 0) return null;
   const cols = ['Level', 'PB', ...groups.flatMap((g) => g.colLabels ?? [])];
   const rows = [];

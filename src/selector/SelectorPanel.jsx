@@ -13,6 +13,9 @@ import styles from './SelectorPanel.module.css';
 /* Cores dos badges de pré-requisito nos cards (atende / não atende / incerto). */
 const PREREQ_CLASS = { ok: 'preOk', bad: 'preBad', unknown: 'preUnknown' };
 
+/* Tons de badge (ex: tipos de classe — caster azul, half accent, martial vermelho). */
+const TONE_CLASS = { blue: 'toneBlue', accent: 'toneAccent', red: 'toneRed' };
+
 export default function SelectorPanel({ entity, db, currentId, onSelect, onClose, exclude }) {
   const [query, setQuery] = useState('');
   const [filterState, setFilterState] = useState({});
@@ -182,11 +185,15 @@ export default function SelectorPanel({ entity, db, currentId, onSelect, onClose
                       )}
                       {card.badges?.length > 0 && (
                         <span className={styles.badges}>
-                          {card.badges.map((b) => (
-                            <em key={b} className={styles.badge}>
-                              {b}
-                            </em>
-                          ))}
+                          {card.badges.map((b, bi) => {
+                            const text = typeof b === 'string' ? b : b.text;
+                            const tone = typeof b === 'object' ? TONE_CLASS[b.tone] : null;
+                            return (
+                              <em key={bi} className={tone ? `${styles.badge} ${styles[tone]}` : styles.badge}>
+                                {text}
+                              </em>
+                            );
+                          })}
                         </span>
                       )}
                     </button>

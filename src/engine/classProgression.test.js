@@ -96,3 +96,25 @@ describe('classTable', () => {
     expect(classTable({})).toBe(null);
   });
 });
+
+describe('resolveOptionalRefs (via classFeatureLevels/subclass)', () => {
+  it('troca refOptionalfeature pelo texto completo quando existe no db', async () => {
+    const { resolveOptionalRefs } = await import('./optionalFeatures');
+    const db2 = {
+      optionalfeatures: {
+        optionalfeature: [{ name: 'Ambush', source: 'TCE', entries: ['ambush full text'] }],
+      },
+    };
+    const out = resolveOptionalRefs(
+      [{ type: 'entries', entries: [{ type: 'refOptionalfeature', optionalfeature: 'Ambush|TCE' }] }],
+      db2,
+    );
+    expect(out[0].entries[0]).toEqual({ type: 'entries', name: 'Ambush', entries: ['ambush full text'] });
+  });
+
+  it('mantém a ref quando não há match (fallback de nome no EntryContent)', async () => {
+    const { resolveOptionalRefs } = await import('./optionalFeatures');
+    const out = resolveOptionalRefs([{ type: 'refOptionalfeature', optionalfeature: 'Nope|XXX' }], {});
+    expect(out[0].type).toBe('refOptionalfeature');
+  });
+});

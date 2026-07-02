@@ -36,8 +36,8 @@
 }
 
 .subTabActive {
-  border-color: var(--src-class);
-  color: var(--src-class);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .addTab {
@@ -74,11 +74,9 @@
   padding-top: 12px;
 }
 
+/* Sem card com borda: as classes já se separam pelas sub-abas e as features têm
+   a própria seção — o conteúdo flui direto e ganha largura no mobile. */
 .classCard {
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--src-class);
-  border-radius: 14px;
-  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -94,8 +92,8 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: var(--src-class);
-  border: 1px solid var(--src-class);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   padding: 2px 6px;
   font-weight: 600;
